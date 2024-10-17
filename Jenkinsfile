@@ -4,7 +4,8 @@ pipeline {
     environment {
         // Set up Python environment variables if needed
         PYTHON_VERSION = '3.8' // Specify your Python version
-        VENV_DIR = 'venv' // Virtual environment directory
+        VENV_DIR = 'backend/venv' // Virtual environment directory
+        NODE_VERSION = '16'
     }
 
     stages {
@@ -20,25 +21,49 @@ pipeline {
                 script {
                     // Set up the virtual environment
                     sh "python${PYTHON_VERSION} -m venv ${VENV_DIR}"
-                    sh "${VENV_DIR}/bin/pip install -r requirements.txt" // Install dependencies
+                    sh "${VENV_DIR}/bin/pip install -r backend/requirements.txt" // Install dependencies
                 }
             }
         }
         
-        stage('Run Tests') {
+        stage('Set Up Node Environment') {
+            steps {
+                script {
+                    sh "nvm use ${NODE_VERSION}"
+                    sh "npm install"
+                }
+            }
+        }
+        
+        stage('Run Backend Tests') {
             steps {
                 script {
                     // Activate the virtual environment and run tests
-                    sh "${VENV_DIR}/bin/python manage.py test" // Adjust if you have specific test commands
+                    sh "cd backend && ${VENV_DIR}/bin/python manage.py test" // Adjust if you have specific test commands
                 }
             }
         }
         
-        stage('Build') {
+        stage('Run Frontend Tests') {
             steps {
                 script {
-                    // Any build steps if necessary, e.g., collecting static files
-                    sh "${VENV_DIR}/bin/python manage.py collectstatic --noinput"
+                    sh "npm run test"
+                }
+            }
+        }
+        
+        stage('Build Frontend') {
+            steps {
+                script {
+                    sh "npm run build"
+                }
+            }
+        }
+
+        stage('Collect Static Files') {
+            steps {
+                script {
+                    sh "cd backend && ${VENV_DIR}/bin/python manage.py collectstatic --noinput"
                 }
             }
         }
@@ -49,8 +74,8 @@ pipeline {
                     // Deploy your Django application
                     // Example for a generic deployment command
                     // You can replace this with your actual deployment steps
-                    echo "Deploying the Django application..."
-                    // For example, using Gunicorn or updating a service
+                    echo "Deploying the application..."
+                    // For example, copying files to a server or updating a service
                 }
             }
         }
