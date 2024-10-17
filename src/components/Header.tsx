@@ -28,7 +28,7 @@ const Header: React.FC = () => {
             ...item,
             label: <Link to={item.key}>{item.label}</Link>,
           }))}
-          className="border-0"
+          className="border-0 flex-nowrap space-x-2"
         />
       </div>
     </AntHeader>
