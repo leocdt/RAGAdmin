@@ -1,3 +1,5 @@
 Django==4.2.7
 djangorestframework==3.14.0
 django-cors-headers==4.3.0
+chromadb==0.4.15
+PyPDF2==3.0.1

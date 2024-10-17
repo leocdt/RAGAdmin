@@ -9,26 +9,25 @@ const InsertData: React.FC = () => {
   const [fileList, setFileList] = useState<any[]>([]);
 
   const handleUpload = async (options: any) => {
-  const { file, onSuccess, onError } = options;
+    const { file, onSuccess, onError } = options;
 
-  const formData = new FormData();
-  formData.append('file', file);
+    const formData = new FormData();
+    formData.append('file', file);
 
-  try {
-    const response = await axios.post('http://localhost:8000/api/upload/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    message.success(`${file.name} file uploaded successfully.`);
-    onSuccess('OK');
-  } catch (err: any) {
-    console.error('Error uploading file:', err);
-    message.error(err.response?.data?.error || `${file.name} file upload failed.`);
-    onError(err);
-  }
-};
-
+    try {
+      const response = await axios.post('http://localhost:8000/api/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      message.success(`${file.name} file uploaded successfully.`);
+      onSuccess('OK');
+    } catch (err: any) {
+      console.error('Error uploading file:', err);
+      message.error(err.response?.data?.error || `${file.name} file upload failed.`);
+      onError(err);
+    }
+  };
 
   const props = {
     name: 'file',
@@ -61,7 +60,7 @@ const InsertData: React.FC = () => {
         </p>
         <p className="ant-upload-text">Click or drag file to this area to upload</p>
         <p className="ant-upload-hint">
-          Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+          Support for PDF, Markdown, and TXT files. Strictly prohibit from uploading company data or other
           sensitive files.
         </p>
       </Dragger>
