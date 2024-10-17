@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository
-                git url: 'http://10.0.2.10:3000/username/repo.git', branch: 'main' // Adjust URL and branch as needed
+                git url: 'http://10.0.2.10:3000/Leo/RAGAdmin.git', branch: 'main' // Adjust URL and branch as needed
             }
         }
         
