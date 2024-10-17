@@ -1,2 +1,2 @@
 # RAGAdmin
-LLM chatbot for La Poste
+Local RAG (Retrieval-Augmented Generation) for the La Poste company
