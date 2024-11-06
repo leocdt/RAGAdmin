@@ -3,3 +3,7 @@ djangorestframework==3.14.0
 django-cors-headers==4.3.0
 chromadb==0.4.15
 PyPDF2==3.0.1
+sentence-transformers==2.5.1
+torch==2.2.0
+torchvision==0.17.0
+torchaudio==2.2.0
