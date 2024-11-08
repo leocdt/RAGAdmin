@@ -17,7 +17,7 @@ const Documents: React.FC = () => {
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/documents/');
+        const response = await axios.get('http://192.168.0.149:8000/api/documents/');
         setDocuments(response.data);
       } catch (error) {
         console.error('Error fetching documents:', error);
