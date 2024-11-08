@@ -77,6 +77,7 @@ def initialize_chroma():
         )
 
 class ChatView(APIView):
+    """
     def post(self, request):
         message = request.data.get('message', '')
         results = collection.query(
@@ -87,6 +88,11 @@ class ChatView(APIView):
             response = f"Based on the document: {results['metadatas'][0][0]['filename']}\n\n{results['documents'][0][0][:500]}..."
         else:
             response = "I couldn't find any relevant information in the documents."
+        return Response({'response': response})
+    """
+    def post(self, request):
+        message = request.data.get('message', '')
+        response = f"Message well received: {message}"
         return Response({'response': response})
     
 #initialize_chroma()
