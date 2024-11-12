@@ -104,14 +104,12 @@ class ChatView(APIView):
         reponse = f"Message well received: {message}"
         return Response({'response': reponse})
     """
-    # For chatting with ollama server with llama3.1
     def post(self, request):
         message = request.data.get('message', '')
-        response = ollama.chat(model="llama3.1:8b", messages=[
-            {
-                "role": "user",
-                "content": message
-            }
-        ])
-        return Response({'response': response['message']['content']})
+        response = ollama.chat(model="llama3.1:8b", messages=[{"role": "user", "content": message}])
+        
+        # Assuming response is a dictionary, extract the content
+        response_content = response.get('message', {}).get('content', 'No response content available')
+        
+        return Response({"response": response_content})
 #initialize_chroma()
