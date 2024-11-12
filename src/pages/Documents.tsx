@@ -32,7 +32,7 @@ const Documents: React.FC = () => {
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:8000/api/documents/${id}/`);
+      await axios.delete(`http://192.168.0.149:8000/api/documents/${id}/`);
       message.success('Document deleted successfully');
       fetchDocuments();
     } catch (error) {
