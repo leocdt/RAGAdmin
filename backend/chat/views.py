@@ -8,6 +8,7 @@ import tempfile
 import chromadb
 from PyPDF2 import PdfReader
 import uuid
+import ollama
 
 chroma_client = chromadb.Client()
 collection = chroma_client.create_collection("documents")
@@ -97,9 +98,18 @@ class ChatView(APIView):
         else:
             response = "I couldn't find any relevant information in the documents."
         return Response({'response': response})
-    """
+    
     def post(self, request):
         message = request.data.get('message', '')
         reponse = f"Message well received: {message}"
         return Response({'response': reponse})
+    """
+    def post(self, request):
+        message = request.data.get('message', '')
+        response = ollama.chat(model="llama3.1:8b", messages=[{"role": "user", "content": message}])
+        
+        # Assuming response is a dictionary, extract the content
+        response_content = response.get('message', {}).get('content', 'No response content available')
+        
+        return Response({"response": response_content})
 #initialize_chroma()
