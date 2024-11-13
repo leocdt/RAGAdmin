@@ -7,9 +7,17 @@ import os
 import tempfile
 import chromadb
 from PyPDF2 import PdfReader
+from sentence_transformers import SentenceTransformer
 
 chroma_client = chromadb.Client()
-collection = chroma_client.create_collection("documents")
+# Le modèle de vecteurisation 
+encoder = SentenceTransformer("paraphrase-mpnet-base-v2")
+
+
+collection = chroma_client.create_collection(
+    "documents",
+    embedding_function=lambda texts: encoder.encode(texts).tolist()
+)
 
 def process_file(file, file_type):
     content = ""

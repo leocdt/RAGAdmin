@@ -33,9 +33,11 @@ const Chat: React.FC = () => {
         helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
         request={handleMessageSend}
         inputAreaProps={{
-        placeholder: 'Enter your message...',
-  }}
-/>
+          placeholder: 'Enter your message...',
+        }}
+        locale="en-US"
+
+      />
     </div>
   );
 };
