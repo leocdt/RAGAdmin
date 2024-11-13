@@ -1,60 +1,86 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+import logging
 from .models import Document
 from .serializers import DocumentSerializer
+from .services.document_service import DocumentService
+from .services.vector_store_service import VectorStoreService
+from .services.chat_service import ChatService
 import os
-import tempfile
-import chromadb
-from PyPDF2 import PdfReader
-import uuid
-import ollama
 
-chroma_client = chromadb.Client()
-collection = chroma_client.create_collection("documents")
+logger = logging.getLogger(__name__)
 
-def process_file(file, file_type):
-    content = ""
-    if file_type == 'pdf':
-        pdf_reader = PdfReader(file)
-        for page in pdf_reader.pages:
-            content += page.extract_text()
-    elif file_type == 'md':
-        content = file.read().decode('utf-8')
-    elif file_type == 'txt':
-        content = file.read().decode('utf-8')
-    return content
+# Initialize services
+vector_store_service = VectorStoreService()
+document_service = DocumentService()
+chat_service = ChatService(vector_store_service)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ChatView(APIView):
+    def post(self, request):
+        message = request.data.get('message', '')
+        if not message:
+            return Response(
+                {'error': 'No message provided'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            response_data = chat_service.generate_response(message)
+            return Response(response_data)
+        except Exception as e:
+            logger.error(f"Error in chat: {str(e)}")
+            return Response(
+                {'error': 'An error occurred processing your request'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class DocumentUploadView(APIView):
     def post(self, request):
         file = request.FILES.get('file')
         if not file:
-            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'No file provided'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        file_extension = os.path.splitext(file.name)[1].lower()
-        allowed_extensions = ['.pdf', '.md', '.txt']
+        try:
+            file_extension = os.path.splitext(file.name)[1].lower()[1:]
+            if file_extension not in ['pdf', 'md', 'txt']:
+                return Response(
+                    {'error': 'File extension not supported'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        if file_extension not in allowed_extensions:
-            return Response({'error': 'File extension not supported'}, status=status.HTTP_400_BAD_REQUEST)
+            # Process and store document
+            content = document_service.process_file(file, file_extension)
+            document = Document.objects.create(
+                name=file.name,
+                file_type=file_extension,
+                content=content
+            )
 
-        file_type = file_extension[1:]
-        content = process_file(file, file_type)
+            # Prepare and store in vector database
+            documents = document_service.store_document(
+                content,
+                {"filename": file.name, "id": str(document.id)}
+            )
+            vector_store_service.add_documents(documents)
 
-        # Créer le document avec tous les champs en une seule fois
-        document = Document.objects.create(
-            name=file.name,
-            file_type=file_type,
-            content=content,
-            chroma_id=str(uuid.uuid4())  # Génère un ID unique aléatoire
-        )
+            return Response({
+                'message': 'Upload successful',
+                'document_id': document.id
+            })
 
-        collection.add(
-            documents=[content],
-            metadatas=[{"filename": file.name, "id": str(document.id)}],
-            ids=[document.chroma_id]  # Utiliser le chroma_id généré
-        )
-
-        return Response({'message': 'Upload successful', 'document_id': document.id})
+        except Exception as e:
+            logger.error(f"Error in document upload: {str(e)}")
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class DocumentListView(APIView):
     def get(self, request):
@@ -65,15 +91,12 @@ class DocumentListView(APIView):
     def delete(self, request, document_id):
         try:
             document = Document.objects.get(id=document_id)
-            # Delete from ChromaDB
-            collection.delete(ids=[document.chroma_id])
-            # Delete from SQLite
+            vector_store_service.delete_document(str(document.id))
             document.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Document.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        
+
 class DocumentContentView(APIView):
     def get(self, request, document_id):
         try:
@@ -85,62 +108,6 @@ class DocumentContentView(APIView):
             })
         except Document.DoesNotExist:
             return Response(
-                {'error': 'Document not found'}, 
+                {'error': 'Document not found'},
                 status=status.HTTP_404_NOT_FOUND
             )
-
-
-def initialize_chroma():
-    documents = Document.objects.all()
-    for doc in documents:
-        collection.add(
-            documents=[doc.content],
-            metadatas=[{"filename": doc.name, "id": str(doc.id)}],
-            ids=[str(doc.id)]
-        )
-
-class ChatView(APIView):
-    def post(self, request):
-        message = request.data.get('message', '')
-        
-        # 1. Recherche dans les documents avec ChromaDB
-        results = collection.query(
-            query_texts=[message],
-            n_results=2  # Récupérer les 2 résultats les plus pertinents
-        )
-        
-        # 2. Préparer le contexte pour le LLM
-        context = ""
-        if results['documents'][0]:
-            context = "\n".join(results['documents'][0])
-            
-        # 3. Construire le prompt avec le contexte
-        system_prompt = f"""You are RAGAdmin, a helpful assistant whose job is to answer questions from employees of the French company La Poste. Use the following context to answer the question. 
-        If the context doesn't contain relevant information, say so.
-        
-        Context:
-        {context}
-        
-        Answer in the same language as the question."""
-        
-        # 4. Appeler le LLM avec le contexte
-        response = ollama.chat(model="llama3.1:8b", messages=[
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": message
-            }
-        ])
-        
-        response_content = response['message']['content']
-        
-        # 5. Ajouter les sources utilisées
-        if results['documents'][0]:
-            sources = [meta['filename'] for meta in results['metadatas'][0]]
-            response_content += f"\n\nSources: {', '.join(sources)}"
-        
-        return Response({"response": response_content})
-#initialize_chroma()
