@@ -9,7 +9,7 @@ const Chat: React.FC = () => {
       const lastMessage = messages[messages.length - 1]?.content || '';
 
       // Envoyer ce message au backend
-      const response = await axios.post('http://194.168.0.149:8000/api/chat/', { message: lastMessage });
+      const response = await axios.post('http://localhost:8000/api/chat/', { message: lastMessage });
 
       // Utiliser directement la réponse du backend sans JSON.stringify, pour afficher un texte simple
       return new Response(response.data.response, {

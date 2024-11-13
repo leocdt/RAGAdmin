@@ -72,6 +72,23 @@ class DocumentListView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Document.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        
+class DocumentContentView(APIView):
+    def get(self, request, document_id):
+        try:
+            document = Document.objects.get(id=document_id)
+            return Response({
+                'content': document.content,
+                'name': document.name,
+                'file_type': document.file_type
+            })
+        except Document.DoesNotExist:
+            return Response(
+                {'error': 'Document not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 
 def initialize_chroma():
     documents = Document.objects.all()
@@ -83,33 +100,47 @@ def initialize_chroma():
         )
 
 class ChatView(APIView):
-    """
-
-    This will be effective when the llm will be initialized
-    
     def post(self, request):
         message = request.data.get('message', '')
+        
+        # 1. Recherche dans les documents avec ChromaDB
         results = collection.query(
             query_texts=[message],
-            n_results=1
+            n_results=2  # Récupérer les 2 résultats les plus pertinents
         )
-        if results['documents'][0]:
-            response = f"Based on the document: {results['metadatas'][0][0]['filename']}\n\n{results['documents'][0][0][:500]}..."
-        else:
-            response = "I couldn't find any relevant information in the documents."
-        return Response({'response': response})
-    
-    def post(self, request):
-        message = request.data.get('message', '')
-        reponse = f"Message well received: {message}"
-        return Response({'response': reponse})
-    """
-    def post(self, request):
-        message = request.data.get('message', '')
-        response = ollama.chat(model="llama3.1:8b", messages=[{"role": "user", "content": message}])
         
-        # Assuming response is a dictionary, extract the content
-        response_content = response.get('message', {}).get('content', 'No response content available')
+        # 2. Préparer le contexte pour le LLM
+        context = ""
+        if results['documents'][0]:
+            context = "\n".join(results['documents'][0])
+            
+        # 3. Construire le prompt avec le contexte
+        system_prompt = f"""You are RAGAdmin, a helpful assistant whose job is to answer questions from employees of the French company La Poste. Use the following context to answer the question. 
+        If the context doesn't contain relevant information, say so.
+        
+        Context:
+        {context}
+        
+        Answer in the same language as the question."""
+        
+        # 4. Appeler le LLM avec le contexte
+        response = ollama.chat(model="llama3.1:8b", messages=[
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "user",
+                "content": message
+            }
+        ])
+        
+        response_content = response['message']['content']
+        
+        # 5. Ajouter les sources utilisées
+        if results['documents'][0]:
+            sources = [meta['filename'] for meta in results['metadatas'][0]]
+            response_content += f"\n\nSources: {', '.join(sources)}"
         
         return Response({"response": response_content})
 #initialize_chroma()
