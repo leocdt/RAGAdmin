@@ -72,6 +72,23 @@ body {
     color: #000000 !important;
 }
 
+/*Pour la scrollbar*/
+.acss-1v5259w::-webkit-scrollbar {
+    width: 8px;  /* Largeur de la scrollbar */
+}
+
+.acss-1v5259w::-webkit-scrollbar-track {
+    background: #ffffff;  /* Couleur de fond */
+}
+
+.acss-1v5259w::-webkit-scrollbar-thumb {
+    background: #1677ff;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+.acss-1v5259w::-webkit-scrollbar-thumb:hover {
+    background: #0958d9;  /* Couleur au survol */
+}
 
 
 /* Styles pour le thème sombre */
@@ -164,6 +181,11 @@ body {
     color: #ffffff !important;
 }
 
+/*Pour l'heure afficher au dessus des messages*/
+[data-theme='dark'] .acss-1s7pvt5{
+    color: #666666 !important;
+}
+
 /*Pour l'hover sur le boution supprime*/
 [data-theme='dark'] .ant-tooltip-open{
     background-color: #2a2a2a !important;
@@ -216,3 +238,21 @@ body {
     background-color: #666666 !important;
 }
 
+
+/*Pour la scrollbar*/
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar {
+    width: 8px;  /* Largeur de la scrollbar */
+}
+
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-track {
+    background: #1f1f1f;  /* Couleur de fond */
+}
+
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-thumb {
+    background: #444444;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-thumb:hover {
+    background: #555555;  /* Couleur au survol */
+}
