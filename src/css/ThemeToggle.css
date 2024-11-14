@@ -1,0 +1,218 @@
+/* Styles de base pour le thème clair */
+:root {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Styles du toggle */
+.theme-checkbox {
+    --toggle-size: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 3.50em;
+    height: 1.50em;
+    background: linear-gradient(to right, #ffffff 50%, #2a2a2a 50%) no-repeat;
+    background-size: 205%;
+    background-position: 0;
+    transition: 0.4s;
+    border-radius: 99em;
+    position: relative;
+    cursor: pointer;
+    font-size: var(--toggle-size);
+}
+  
+.theme-checkbox::before {
+    content: "";
+    width: 1.0em;
+    height: 1.0em;
+    position: absolute;
+    top: 0.238em;
+    left: 0.538em;
+    background: linear-gradient(to right, #efefef 50%, #2a2a2a 50%) no-repeat;
+    background-size: 205%;
+    background-position: 100%;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+  
+.theme-checkbox:checked::before {
+    left: calc(100% - 1.0em - 0.538em);
+    background-position: 0;
+}
+  
+.theme-checkbox:checked {
+    background-position: 100%;
+}
+
+
+/* Styles pour le thème clair */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.ant-layout {
+    background-color: #f0f2f5;
+}
+
+.ant-layout-header {
+    background-color: #ffffff !important;
+}
+
+.ant-menu {
+    background-color: #ffffff !important;
+}
+
+.ant-menu-item {
+    color: #000000 !important;
+}
+
+.site-title {
+    color: #000000 !important;
+}
+
+
+
+/* Styles pour le thème sombre */
+[data-theme='dark'] {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+[data-theme='dark'] .site-title {
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-layout {
+    background-color: #141414 !important;
+}
+
+[data-theme='dark'] .ant-layout-header {
+    background-color: #1f1f1f !important;
+}
+
+[data-theme='dark'] .ant-menu {
+    background-color: #1f1f1f !important;
+}
+
+[data-theme='dark'] .ant-menu-item {
+    color: #ffffff !important;
+}
+
+
+[data-theme='dark'] .ant-menu-item-selected::after {
+    border-bottom-color: #ff9933 !important;
+}
+
+[data-theme='dark'] .ant-menu-item:hover::after {
+    border-bottom-color: #ff9933 !important;
+}
+
+/*-----------------------Chat-------------------------------*/
+
+/*---dark---*/
+
+/*Pour le titre */
+[data-theme='dark'] h1 {
+    color: #ffffff !important;
+}
+
+/* Pour la zone d'écriture des messages */
+[data-theme='dark'] .ant-pro-chat-input-area {
+    background: #1f1f1f !important;
+    border-radius: 20px !important;
+}
+
+/* Pour les icones */
+[data-theme='dark'] .anticon {
+    color: #ff9933 !important;
+}
+
+/* Pour les zones de messages */
+[data-theme='dark'] .ant-pro-chat-list-item-message-content{
+    background-color: #1f1f1f !important;
+}
+
+/* Pour le texte des messages */
+[data-theme='dark'] .zcss-1hxup8p>p{
+    color: #ffffff !important;
+}
+
+/* Pour le bouton de retour vers le dernièr message */
+[data-theme='dark'] .acss-1kwsnuy{
+    color: orange !important;
+}
+
+/*Pour la zone de saisie de message*/
+[data-theme='dark'] .acss-6ckfqf{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .acss-6ckfqf::placeholder {
+    color: #666666 !important; /* Un gris clair pour une meilleure lisibilité */
+    opacity: 0.7; /* Optionnel : pour ajuster la transparence */
+}
+
+/*Lorsque que l'on clique sur la zone de saisie de message*/
+[data-theme='dark'] .ant-select-focused{
+    border : 0.2px solid orange !important;
+}
+
+/*Pour le texte de la zone de saisie de message*/
+[data-theme='dark'] [id^="rc_select_"] { /* car l'id est dynamique */
+    color: #ffffff !important;
+}
+
+/*Pour l'hover sur le boution supprime*/
+[data-theme='dark'] .ant-tooltip-open{
+    background-color: #2a2a2a !important;
+}
+
+/*Pour changer la couleur du fond de la pop up lorsuq'on appuye sur le bouton supprime*/
+[data-theme='dark'] .ant-popover-inner{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .ant-popover-arrow:before{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .ant-popover-arrow::after{
+    background-color: #2a2a2a !important;
+}
+
+/*Pour changer la couleur du texte de la pop up lorsuq'on appuye sur le bouton supprime*/
+
+[data-theme='dark'] .ant-popconfirm-title{
+    color: #ffffff !important;
+}
+
+
+/*Pour changer la couleur des actions possibles sur un message*/
+
+[data-theme='dark'] .zcss-t61miv{
+    border: 1px solid #666666;
+}
+
+[data-theme='dark'] .zcss-t61miv>.ant-btn>.ant-btn-icon>.acss-1o4i853>.anticon{
+    color : #666666 !important;
+}
+
+[data-theme='dark'] .zcss-1jqu9f1>.ant-btn-icon>.anticon{
+    color : #666666 !important;
+}
+
+[data-theme='dark'] .ant-dropdown-menu{
+    background-color: #1f1f1f !important;
+}
+
+
+[data-theme = 'dark'] .ant-dropdown-menu-title-content{
+    color: #ffffff !important;
+}
+
+[data-theme = 'dark'] .ant-dropdown-menu-item:hover{
+    background-color: #666666 !important;
+}
+

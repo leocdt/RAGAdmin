@@ -5,6 +5,8 @@ import Header from './components/Header';
 import Chat from './pages/Chat';
 import InsertData from './pages/InsertData';
 import Documents from './pages/Documents';
+import ThemeToggle from './components/ThemeToggle';
+
 
 const { Content } = Layout;
 
@@ -21,6 +23,7 @@ function App() {
             <Route path="/" element={<Navigate to="/chat" replace />} />
           </Routes>
         </Content>
+        <ThemeToggle className="absolute bottom-[25px] left-[25px]"/>
       </Layout>
     </Router>
   );

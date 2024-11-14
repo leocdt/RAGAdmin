@@ -36,9 +36,9 @@ const Chat: React.FC = () => {
           placeholder: 'Enter your message...',
         }}
         locale="en-US"
-
       />
     </div>
+
   );
 };
 
