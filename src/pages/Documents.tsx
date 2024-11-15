@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag } from 'antd';
-import { FileText, FileImage, File } from 'lucide-react';
+import { Table, Tag, Button, Popconfirm, message, Modal } from 'antd';
+import { FileText, FileImage, File, Trash2 } from 'lucide-react';
 import axios from 'axios';
+import { Eye } from 'lucide-react';
+import Paragraph from 'antd/es/typography/Paragraph';
 
 interface Document {
   id: string;
@@ -11,21 +13,59 @@ interface Document {
   chroma_id: string;
 }
 
+interface DocumentContent {
+  content: string;
+  name: string;
+  file_type: string;
+}
+
 const Documents: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<DocumentContent | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchDocuments = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/documents/');
+      setDocuments(response.data);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      message.error('Failed to fetch documents');
+    }
+  };
 
   useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/api/documents/');
-        setDocuments(response.data);
-      } catch (error) {
-        console.error('Error fetching documents:', error);
-      }
-    };
-
     fetchDocuments();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    setLoading(true);
+    try {
+      await axios.delete(`http://localhost:8000/api/documents/${id}/`);
+      message.success('Document deleted successfully');
+      fetchDocuments();
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      message.error('Failed to delete document');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleView = async (id: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8000/api/documents/${id}/content/`);
+      setSelectedDocument(response.data);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Error fetching document content:', error);
+      message.error('Failed to fetch document content');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     {
@@ -57,9 +97,36 @@ const Documents: React.FC = () => {
       key: 'upload_date',
     },
     {
-      title: 'Chroma ID',
-      dataIndex: 'chroma_id',
-      key: 'chroma_id',
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: Document) => (
+        <div className="flex space-x-2">
+        <Button
+            type="text"
+            icon={<Eye size={16} className="text-blue-500" />}
+            onClick={() => handleView(record.id)}
+            loading={loading}
+          />
+        <Popconfirm
+          title="Delete Document"
+          description="Are you sure you want to delete this document?"
+          onConfirm={() => handleDelete(record.id)}
+          okText="Yes"
+          cancelText="No"
+          okButtonProps={{ danger: true }}
+        >
+          <Button 
+            type="text"
+            danger
+            icon={<Trash2 size={16} />}
+            loading={loading}
+            className="flex items-center hover:text-red-700"
+          >
+            Delete
+          </Button>
+        </Popconfirm>
+        </div>
+      ),
     },
   ];
 
@@ -67,6 +134,20 @@ const Documents: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Documents</h1>
       <Table columns={columns} dataSource={documents} rowKey="id" />
+      
+      <Modal
+        title={selectedDocument?.name}
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <div className="max-h-[60vh] overflow-y-auto">
+          <Paragraph className="whitespace-pre-wrap">
+            {selectedDocument?.content}
+          </Paragraph>
+        </div>
+      </Modal>
     </div>
   );
 };
