@@ -29,7 +29,7 @@ class ChatService:
         
         self.raw_prompt = PromptTemplate.from_template(
              """
-            Your name is RAGAdmin, you are a technical assistant good at searching documents. If you do not have an answer from the provided information say so
+            Your name is RAGAdmin, you are a technical assistant. If you do not have an answer from the provided information say so. Use as much the documents to answer the question but do not repeat the same information and if you do not have an answer from the documents say so or answer with knowledge you have. Answer with step by step reasoning.
             Context: {context}
             Previous conversation: {chat_history}
             Question: {input}

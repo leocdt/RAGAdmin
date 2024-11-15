@@ -1,22 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ProChat } from '@ant-design/pro-chat';
 import type { ChatMessage } from '@ant-design/pro-chat';
 import { v4 as uuidv4 } from 'uuid';
-import { setCookie, getCookie } from '../utils/cookies';
+import { useParams, useNavigate } from 'react-router-dom';
+import ChatSidebar from '../components/ChatSidebar';
+
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: Record<string, ChatMessage>;
+}
 
 const Chat: React.FC = () => {
-  const [chatId] = useState(() => getCookie('chatId') || uuidv4());
-  const [cachedChats, setCachedChats] = useState<Record<string, ChatMessage> | null>(null);
+  const { chatId } = useParams();
+  const navigate = useNavigate();
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>(() => {
+    const saved = localStorage.getItem('chat_sessions');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
+  const chatKey = useRef(0);
 
   useEffect(() => {
-    setCookie('chatId', chatId);
-    const cachedData = localStorage.getItem(`chat_${chatId}`);
-    if (cachedData) {
-      setCachedChats(JSON.parse(cachedData));
-    } else {
-      setCachedChats({});
+    if (!chatId && chatSessions.length === 0) {
+      const newChatId = uuidv4();
+      const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+      setChatSessions([newSession]);
+      localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
+      navigate(`/chat/${newChatId}`);
+    } else if (!chatId && chatSessions.length > 0) {
+      navigate(`/chat/${chatSessions[0].id}`);
     }
-  }, [chatId]);
+  }, [chatId, chatSessions, navigate]);
+
+  useEffect(() => {
+    if (chatId) {
+      const session = chatSessions.find(s => s.id === chatId);
+      if (session) {
+        setCurrentChat(session.messages);
+      } else {
+        setCurrentChat({});
+      }
+      chatKey.current += 1;
+    }
+  }, [chatId, chatSessions]);
+
+  const handleNewChat = () => {
+    const newChatId = uuidv4();
+    const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+    setChatSessions(prev => {
+      const updated = [...prev, newSession];
+      localStorage.setItem('chat_sessions', JSON.stringify(updated));
+      return updated;
+    });
+    navigate(`/chat/${newChatId}`);
+  };
 
   const handleMessageSend = async (messages: ChatMessage[]) => {
     try {
@@ -40,22 +78,7 @@ const Chat: React.FC = () => {
       });
 
       if (!response.ok) throw new Error('Network response was not ok');
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let responseText = '';
-
-      while (reader) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        responseText += chunk;
-      }
-
-      return new Response(responseText, {
-        status: 200,
-        headers: { 'Content-Type': 'text/plain' },
-      });
+      return response;
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -66,26 +89,51 @@ const Chat: React.FC = () => {
     }
   };
 
-  const handleChatsChange = (chats: Record<string, ChatMessage>) => {
-    setCachedChats(chats);
-    localStorage.setItem(`chat_${chatId}`, JSON.stringify(chats));
+  const handleChatsChange = (messages: Record<string, ChatMessage>) => {
+    if (chatId) {
+      setChatSessions(prev => {
+        const updated = prev.map(session => 
+          session.id === chatId 
+            ? { ...session, messages, title: getFirstUserMessage(messages) || session.title }
+            : session
+        );
+        localStorage.setItem('chat_sessions', JSON.stringify(updated));
+        return updated;
+      });
+      setCurrentChat(messages);
+    }
+  };
+
+  const getFirstUserMessage = (messages: Record<string, ChatMessage>): string => {
+    const firstMessage = Object.values(messages).find(msg => msg.role === 'user');
+    if (firstMessage?.content) {
+      return firstMessage.content.slice(0, 30) + (firstMessage.content.length > 30 ? '...' : '');
+    }
+    return 'New Chat';
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Chat with RAGAdmin</h1>
-      {cachedChats !== null && (
-        <ProChat
-          style={{ height: 'calc(100vh - 200px)' }}
-          helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
-          request={handleMessageSend}
-          initialChats={cachedChats}
-          onChatsChange={handleChatsChange}
-          inputAreaProps={{
-            placeholder: 'Enter your message...',
-          }}
-        />
-      )}
+    <div className="flex h-[calc(100vh-64px)]">
+      <ChatSidebar 
+        chats={chatSessions}
+        onNewChat={handleNewChat}
+        currentChatId={chatId}
+      />
+      <div className="flex-1">
+        {currentChat !== null && chatId && (
+          <ProChat
+            key={chatKey.current}
+            style={{ height: '100%' }}
+            helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
+            request={handleMessageSend}
+            initialChats={currentChat}
+            onChatsChange={handleChatsChange}
+            inputAreaProps={{
+              placeholder: 'Enter your message...',
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };
