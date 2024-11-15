@@ -29,6 +29,8 @@ chat_service = ChatService(vector_store_service)
 class ChatView(APIView):
     def post(self, request):
         message = request.data.get('message', '')
+        history = request.data.get('history', [])
+        
         if not message:
             return Response(
                 {'error': 'No message provided'},
@@ -36,7 +38,7 @@ class ChatView(APIView):
             )
 
         try:
-            response = chat_service.generate_response(message)
+            response = chat_service.generate_response(message, history)
             
             def stream_response():
                 for chunk in response:
