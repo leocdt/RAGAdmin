@@ -30,14 +30,28 @@ class ChatService:
         self.raw_prompt = PromptTemplate.from_template(
              """
             Your name is RAGAdmin, you are a technical assistant good at searching documents. If you do not have an answer from the provided information say so
-            Respond in French
-            Question: {input}
             Context: {context}
+            Previous conversation: {chat_history}
+            Question: {input}
             """
         )
 
-    def generate_response(self, query: str):
+    def generate_response(self, query: str, history: list = None):
         try:
+            # Format chat history for prompt
+            formatted_history = ""
+            if history:
+                self.chat_history = []
+                formatted_messages = []
+                for msg in history:
+                    if msg['role'] == 'human':
+                        self.chat_history.append(HumanMessage(content=msg['content']))
+                        formatted_messages.append(f"Human: {msg['content']}")
+                    else:
+                        self.chat_history.append(AIMessage(content=msg['content']))
+                        formatted_messages.append(f"Assistant: {msg['content']}")
+                formatted_history = "\n".join(formatted_messages)
+
             vector_store = self.vector_store_service.vector_store
             
             retriever = vector_store.as_retriever(
@@ -48,12 +62,13 @@ class ChatService:
                 },
             )
 
+            # Update retriever prompt to include formatted history
             retriever_prompt = ChatPromptTemplate.from_messages([
-                MessagesPlaceholder(variable_name="chat_history"),
-                ("human", "{input}"),
+                ("system", "Previous conversation:\n{chat_history}"),
+                ("human", "Current question: {input}"),
                 (
                     "human",
-                    "Given the above conversation, generate a search query to lookup in order to get information relevant to the conversation",
+                    "Based on this conversation history and question, what would be the best search query to find relevant information?"
                 ),
             ])
 
@@ -63,13 +78,32 @@ class ChatService:
                 prompt=retriever_prompt
             )
 
-            document_chain = create_stuff_documents_chain(self.llm, self.raw_prompt)
+            # Update raw prompt to include formatted history
+            raw_prompt = PromptTemplate.from_template(
+                """
+                Your name is RAGAdmin, you are a technical assistant good at searching documents. If you do not have an answer from the provided information say so.                
+                
+                Context from documents:
+                {context}
+
+                Previous conversation:
+                {chat_history}
+
+                Current question: {input}
+                """
+            )
+
+            document_chain = create_stuff_documents_chain(self.llm, raw_prompt)
             retrieval_chain = create_retrieval_chain(
                 history_aware_retriever,
                 document_chain,
             )
 
-            result = retrieval_chain.invoke({"input": query})
+            # Include formatted history in the chain invocation
+            result = retrieval_chain.invoke({
+                "input": query,
+                "chat_history": formatted_history
+            })
             
             # Update chat history
             self.chat_history.append(HumanMessage(content=query))
