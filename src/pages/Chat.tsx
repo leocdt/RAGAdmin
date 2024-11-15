@@ -1,21 +1,45 @@
 import React from 'react';
 import { ProChat } from '@ant-design/pro-chat';
-import axios from 'axios';
 
 const Chat: React.FC = () => {
   const handleMessageSend = async (messages: any[]) => {
     try {
-      // Récupérer le dernier message envoyé par l'utilisateur
       const lastMessage = messages[messages.length - 1]?.content || '';
+      
+      const response = await fetch('http://localhost:8000/api/chat/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: lastMessage }),
+      });
 
-      // Envoyer ce message au backend
-      const response = await axios.post('http://localhost:8000/api/chat/', { message: lastMessage });
+      if (!response.ok) throw new Error('Network response was not ok');
 
-      // Utiliser directement la réponse du backend sans JSON.stringify, pour afficher un texte simple
-      return new Response(response.data.response, {
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let responseText = '';
+
+      while (reader) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        responseText += chunk;
+        
+        const partialResponse = new Response(responseText, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain' },
+        });
+
+        messages[messages.length - 1].streamingResponse = partialResponse;
+      }
+
+      return new Response(responseText, {
         status: 200,
         headers: { 'Content-Type': 'text/plain' },
       });
+
     } catch (error) {
       console.error('Error sending message:', error);
       return new Response('An error occurred while processing your message.', {
