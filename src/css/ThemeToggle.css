@@ -159,6 +159,15 @@ body {
     border-radius: 20px !important;
 }
 
+/*Pour l'excriture des erreurs*/
+[data-theme='dark'] .ant-alert-message{
+    color: orange !important;
+}
+
+[data-theme='dark'] .ant-alert-error{
+    background-color: #2a2a2a !important;
+    border: 1px solid orange !important;
+}
 /* Pour les icones */
 [data-theme='dark'] .anticon {
     color: #ff9933 !important;
@@ -342,6 +351,7 @@ body {
 
 /*---------------------------------------------------------------------------------Documents----------------------------------------------------------------*/
 
+/*Pour le tableau*/
 [data-theme='dark'] .ant-table{
     color : white;
     background-color: #1f1f1f !important;
@@ -351,43 +361,86 @@ body {
     background-color: #2a2a2a !important;
 }
 
+/*Pour le titre du tableau*/
 [data-theme='dark'] .ant-table-thead>tr>th{
     color : white !important;
     background-color: #2a2a2a !important;
 }
 
+/*Pour la ligne du tableau*/
 [data-theme='dark'] .ant-table-thead >tr>th{
     border-bottom: 1px solid #444444 !important;
 }
 
+/*Pour le séparateur de colonne*/
 [data-theme='dark'] .ant-table-thead >tr>th::before{
     background-color: #444444 !important;
 }
 
+/*Pour la ligne de la table*/
 [data-theme='dark'] .ant-table-cell{
     border-bottom: 1px solid #444444 !important;
 }
 
+/*Pour la ligne active du tableau*/
 [data-theme='dark'] .ant-pagination-item-active{
     background-color: #2a2a2a !important;
     border-color: orange !important;
     
 }
 
+/*Pour le texte de la ligne active du tableau*/
 [data-theme='dark'] .ant-pagination-item-active>a{
     color: orange !important;
     
 }
 
+/*Pour l'icône de la flèche précédente*/
 [data-theme='dark'] .ant-pagination-prev>.ant-pagination-item-link>.anticon-left{
     color: #666666 !important;
 }
 
+/*Pour l'icône de la flèche suivante*/
 [data-theme='dark'] .ant-pagination-next>.ant-pagination-item-link>.anticon-right{
     color: #666666 !important;
 }
 
+/*Pour le logo de visualisation des documents*/
+[data-theme='dark'] .text-blue-500{
+    color: orange !important;
+}
 
-[data-theme='dark'] .ant-table-cell-row-hover{
+[data-theme='dark'] .ant-popconfirm-description{
+    color: orange !important;
+}
+
+/*Pour la confirmation de suppression d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-color-dangerous.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled){
+    background-color: orange !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-color-dangerous.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled):hover {
+    background-color: darkorange !important;
+}
+
+/*Pour annuler la suppression d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-outlined:not(:disabled):not(.ant-btn-disabled):hover {
+    color: orange !important;
+    border: 1px solid orange !important;
+}
+
+[data-theme='dark'] [data-row-key]{
     background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder{
+    background-color: #1f1f1f !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder:hover>td{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-empty-normal .ant-empty-description{
+    color: #ffffff !important;
 }
