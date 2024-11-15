@@ -93,6 +93,8 @@ class ChatService:
                 {chat_history}
 
                 Current question: {input}
+
+                Answer in the same language as the question.
                 """
             )
 
