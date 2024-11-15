@@ -144,7 +144,7 @@ body {
     border-bottom-color: #ff9933 !important;
 }
 
-/*-----------------------Chat-------------------------------*/
+/*---------------------------------------------------------------------------------Chat----------------------------------------------------------------*/
 
 /*---dark---*/
 
@@ -319,4 +319,23 @@ body {
 
 [data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-thumb:hover {
     background: #555555;  /* Couleur au survol */
+}
+
+/*---------------------------------------------------------------------------------InsertData----------------------------------------------------------------*/
+
+[data-theme='dark'] .ant-upload-drag{
+    background: #1f1f1f !important;
+    border : 1px dashed #666666 !important;
+}
+
+[data-theme='dark'] .ant-upload-drag:hover{
+    border : 1px dashed orange !important;
+}
+
+[data-theme='dark'] .ant-upload-text{
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-upload-hint{
+    color: #666666 !important;
 }
