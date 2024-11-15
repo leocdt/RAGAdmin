@@ -339,3 +339,55 @@ body {
 [data-theme='dark'] .ant-upload-hint{
     color: #666666 !important;
 }
+
+/*---------------------------------------------------------------------------------Documents----------------------------------------------------------------*/
+
+[data-theme='dark'] .ant-table{
+    color : white;
+    background-color: #1f1f1f !important;
+}
+
+[data-theme='dark'] .ant-table-tbody:hover{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .ant-table-thead>tr>th{
+    color : white !important;
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .ant-table-thead >tr>th{
+    border-bottom: 1px solid #444444 !important;
+}
+
+[data-theme='dark'] .ant-table-thead >tr>th::before{
+    background-color: #444444 !important;
+}
+
+[data-theme='dark'] .ant-table-cell{
+    border-bottom: 1px solid #444444 !important;
+}
+
+[data-theme='dark'] .ant-pagination-item-active{
+    background-color: #2a2a2a !important;
+    border-color: orange !important;
+    
+}
+
+[data-theme='dark'] .ant-pagination-item-active>a{
+    color: orange !important;
+    
+}
+
+[data-theme='dark'] .ant-pagination-prev>.ant-pagination-item-link>.anticon-left{
+    color: #666666 !important;
+}
+
+[data-theme='dark'] .ant-pagination-next>.ant-pagination-item-link>.anticon-right{
+    color: #666666 !important;
+}
+
+
+[data-theme='dark'] .ant-table-cell-row-hover{
+    background-color: #2a2a2a !important;
+}
