@@ -33,6 +33,8 @@ class ChatService:
             Respond in French
             Question: {input}
             Context: {context}
+
+            Answer in the same language as the question.
             """
         )
 
