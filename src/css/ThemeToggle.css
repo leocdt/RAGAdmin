@@ -72,7 +72,7 @@ body {
     color: #000000 !important;
 }
 
-/*Pour la scrollbar*/
+/*Pour la scrollbar du Chat*/
 .acss-1v5259w::-webkit-scrollbar {
     width: 8px;  /* Largeur de la scrollbar */
 }
@@ -87,6 +87,24 @@ body {
 }
 
 .acss-1v5259w::-webkit-scrollbar-thumb:hover {
+    background: #0958d9;  /* Couleur au survol */
+}
+
+/*scrollbar de éditer */
+.acss-zrr53u::-webkit-scrollbar{
+    width : 4px !important;
+}
+
+.acss-zrr53u::-webkit-scrollbar-track {
+    background: #ffffff !important;  /* Couleur de fond */
+}
+
+.acss-zrr53u::-webkit-scrollbar-thumb {
+    background: #1677ff;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+.acss-zrr53u::-webkit-scrollbar-thumb:hover {
     background: #0958d9;  /* Couleur au survol */
 }
 
@@ -238,8 +256,54 @@ body {
     background-color: #666666 !important;
 }
 
+/*Pour changer la couleur de l'action editer */
+[data-theme = 'dark'] .acss-1oge91j{
+    border: 1px solid #1f1f1f !important;
+}
 
-/*Pour la scrollbar*/
+[data-theme = 'dark'] .acss-1oge91j:hover{
+    border: 1px solid #666666 !important;
+}
+
+/*scrollbar de éditer */
+[data-theme = 'dark'] .acss-zrr53u::-webkit-scrollbar{
+    width : 4px !important;
+}
+
+[data-theme='dark'] .acss-zrr53u::-webkit-scrollbar-track {
+    background: #1f1f1f !important;  /* Couleur de fond */
+}
+
+[data-theme='dark'] .acss-zrr53u::-webkit-scrollbar-thumb {
+    background: #444444;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+[data-theme='dark'] .acss-zrr53u::-webkit-scrollbar-thumb:hover {
+    background: #555555;  /* Couleur au survol */
+}
+
+/*Pour le texte dans éditer*/
+[data-theme = 'dark'] .acss-zrr53u{
+    color: #ffffff !important;
+}
+
+/*Pour les bouttons dans éditer*/
+[data-theme='dark'] .css-7hj71p>.ant-btn-primary{
+    background-color: orange !important;
+}
+
+[data-theme='dark'] .css-7hj71p>.ant-btn-primary:hover{
+    background-color: darkorange !important;
+}
+
+[data-theme='dark'] .css-7hj71p>.ant-btn-default:hover{
+    color: orange !important;
+    border: 1px solid orange !important;
+}
+
+
+/*Pour la scrollbar du chat*/
 [data-theme='dark'] .acss-1v5259w::-webkit-scrollbar {
     width: 8px;  /* Largeur de la scrollbar */
 }
