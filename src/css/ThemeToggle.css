@@ -433,6 +433,7 @@ body {
     background-color: #2a2a2a !important;
 }
 
+/*Lorsqu'il y a pas de document*/
 [data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder{
     background-color: #1f1f1f !important;
 }
@@ -444,3 +445,4 @@ body {
 [data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-empty-normal .ant-empty-description{
     color: #ffffff !important;
 }
+
