@@ -12,7 +12,7 @@
     appearance: none;
     width: 3.50em;
     height: 1.50em;
-    background: linear-gradient(to right, #ffffff 50%, #2a2a2a 50%) no-repeat;
+    background: linear-gradient(to right, #f0f2f5 50%, #2a2a2a 50%) no-repeat;
     background-size: 205%;
     background-position: 0;
     transition: 0.4s;
@@ -29,7 +29,7 @@
     position: absolute;
     top: 0.238em;
     left: 0.538em;
-    background: linear-gradient(to right, #efefef 50%, #2a2a2a 50%) no-repeat;
+    background: linear-gradient(to right, #f0f2f5 50%, #2a2a2a 50%) no-repeat;
     background-size: 205%;
     background-position: 100%;
     border-radius: 50%;
@@ -58,7 +58,11 @@ body {
 
 .ant-layout-header {
     background-color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    z-index: 1000 !important;
 }
+
 
 .ant-menu {
     background-color: #ffffff !important;
@@ -109,7 +113,45 @@ body {
 }
 
 
-/* Styles pour le thème sombre */
+/*Pour la scrollbar de la fenêtre de visualisation d'un document*/
+.max-h-\[60vh\]::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-thumb {
+    background: #1677ff;
+    border-radius: 4px;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-thumb:hover {
+    background: #0958d9;
+}
+
+
+/*Pour la scrollbar de la sidebar quand il y a beaucoup de chat*/
+.container-sidebar::-webkit-scrollbar{
+    width: 4px;
+}
+
+.container-sidebar::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+.container-sidebar::-webkit-scrollbar-thumb {
+    background: #dadad9;
+    border-radius: 4px;
+}
+
+.container-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #1677ff;
+}
+
+
+/*-------------------------------------------------------------------Header--------------------------------------------------*/
 [data-theme='dark'] {
     background-color: #1f1f1f;
     color: #ffffff;
@@ -125,6 +167,9 @@ body {
 
 [data-theme='dark'] .ant-layout-header {
     background-color: #1f1f1f !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    z-index: 1000 !important;
 }
 
 [data-theme='dark'] .ant-menu {
@@ -155,7 +200,7 @@ body {
 
 /* Pour la zone d'écriture des messages */
 [data-theme='dark'] .ant-pro-chat-input-area {
-    background: #1f1f1f !important;
+    background: #151515 !important;
     border-radius: 20px !important;
 }
 
@@ -357,8 +402,14 @@ body {
     background-color: #1f1f1f !important;
 }
 
-[data-theme='dark'] .ant-table-tbody:hover{
+/*Survol d'une ligne du tableau*/
+
+[data-theme='dark'] .ant-table-cell-row-hover{
     background-color: #2a2a2a !important;
+}
+[data-theme='dark'] .ant-table-tbody > tr:hover > td {
+    background-color: #2a2a2a !important;
+    transition: background-color 0.3s;
 }
 
 /*Pour le titre du tableau*/
@@ -382,7 +433,8 @@ body {
     border-bottom: 1px solid #444444 !important;
 }
 
-/*Pour la ligne active du tableau*/
+
+/*Pour la pagination en bas du tableau*/
 [data-theme='dark'] .ant-pagination-item-active{
     background-color: #2a2a2a !important;
     border-color: orange !important;
@@ -410,6 +462,10 @@ body {
     color: orange !important;
 }
 
+[data-theme='dark'] .text-blue-500:hover{
+    color: darkorange !important;
+}
+
 [data-theme='dark'] .ant-popconfirm-description{
     color: orange !important;
 }
@@ -429,10 +485,6 @@ body {
     border: 1px solid orange !important;
 }
 
-[data-theme='dark'] [data-row-key]{
-    background-color: #2a2a2a !important;
-}
-
 /*Lorsqu'il y a pas de document*/
 [data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder{
     background-color: #1f1f1f !important;
@@ -444,5 +496,96 @@ body {
 
 [data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-empty-normal .ant-empty-description{
     color: #ffffff !important;
+}
+
+/*Pour le hover du boutton supprimer d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-color-dangerous.ant-btn-variant-text:hover{
+    color: orange !important;
+    background-color: transparent !important;
+}
+
+/*La fenêtre de visualisation d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-modal .ant-modal-content{
+    background-color: #2a2a2a !important;
+}
+
+/*Pour le header de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-modal .ant-modal-header{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-modal .ant-modal-title {
+    color: #888888 !important;
+}
+
+/*Lorsqu'on survole le bouton de fermeture de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] .ant-modal-close:hover .ant-modal-close-icon {
+    color: rgb(247, 65, 111) !important;
+}
+
+/*Pour le texte de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-typography{
+    color: #ffffff !important;
+}
+
+/*Pour la scrollbar de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar {
+    width: 6px;
+}
+
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar-track {
+    background: #1f1f1f;
+}
+
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 4px;
+}
+
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+/*---------------------------------------------------------Sidebar----------------------------------------------------------------*/
+
+[data-theme='dark'] .container-sidebar{
+    background-color: #1f1f1f !important;
+    border-right: 1px solid #1f1f1f !important;
+}
+
+/*Pour la scrollbar de la sidebar*/
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar{
+    width: 4px;
+}
+
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar-track {
+    background: #1f1f1f;
+}
+
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 4px;
+}
+
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+/*Pour le bouton de création d'un nouveau chat*/
+[data-theme='dark'] .btn-new-chat{
+    background-color: orange !important;
+}
+
+[data-theme='dark'] .btn-new-chat:hover{
+    background-color: #fbda33 !important;
+}
+
+/*Pour l'onglet selectionné dans la sidebar*/
+[data-theme='dark'] .ant-menu-item-selected {
+    background-color: #444444 !important;
+}
+
+[data-theme='dark'] .ant-menu-item:hover {
+    background-color: #2a2a2a !important;
 }
 

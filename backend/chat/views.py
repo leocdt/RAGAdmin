@@ -10,18 +10,27 @@ from .services.document_service import DocumentService
 from .services.vector_store_service import VectorStoreService
 from .services.chat_service import ChatService
 import os
+import uuid
+import gc
+from PyPDF2 import PdfReader
+from sentence_transformers import SentenceTransformer, util
+import torch
+from django.http import StreamingHttpResponse
 
 logger = logging.getLogger(__name__)
 
 # Initialize services
 vector_store_service = VectorStoreService()
 document_service = DocumentService()
+model = SentenceTransformer("all-MiniLM-L6-v2")
 chat_service = ChatService(vector_store_service)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ChatView(APIView):
     def post(self, request):
         message = request.data.get('message', '')
+        history = request.data.get('history', [])
+        
         if not message:
             return Response(
                 {'error': 'No message provided'},
@@ -29,8 +38,17 @@ class ChatView(APIView):
             )
 
         try:
-            response_data = chat_service.generate_response(message)
-            return Response(response_data)
+            response = chat_service.generate_response(message, history)
+            
+            def stream_response():
+                for chunk in response:
+                    yield chunk
+
+            return StreamingHttpResponse(
+                streaming_content=stream_response(),
+                content_type='text/event-stream'
+            )
+
         except Exception as e:
             logger.error(f"Error in chat: {str(e)}")
             return Response(
@@ -57,23 +75,37 @@ class DocumentUploadView(APIView):
 
             # Process and store document
             content = document_service.process_file(file, file_extension)
+            gc.collect()
+
+            # Générer un chroma_id unique
+            chroma_id = str(uuid.uuid4())
+            
+            # Créer le document avec le chroma_id
             document = Document.objects.create(
                 name=file.name,
                 file_type=file_extension,
-                content=content
+                content=content,
+                chroma_id=chroma_id
             )
 
             # Prepare and store in vector database
             documents = document_service.store_document(
                 content,
-                {"filename": file.name, "id": str(document.id)}
+                {"filename": file.name, "id": str(document.id), "chroma_id": chroma_id}
             )
-            vector_store_service.add_documents(documents)
+            
+            # Ajouter les documents au vector store par lots
+            batch_size = 5
+            for i in range(0, len(documents), batch_size):
+                batch = documents[i:i + batch_size]
+                vector_store_service.add_documents(batch)
+                gc.collect()
 
             return Response({
                 'message': 'Upload successful',
-                'document_id': document.id
-            })
+                'document_id': document.id,
+                'chroma_id': chroma_id
+            }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             logger.error(f"Error in document upload: {str(e)}")

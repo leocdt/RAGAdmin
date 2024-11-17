@@ -26,4 +26,7 @@ dist-ssr
 backend/rag_chat/__pycache__
 backend/chat/__pycache__
 backend/chat/migrations/__pycache__
-
+backend/rag_chat/__pycache__
+backend/chat/__pycache__
+backend/chat/services/__pycache__
+backend/chat/migrations/__pycache__
