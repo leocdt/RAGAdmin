@@ -394,6 +394,19 @@ body {
     color: #666666 !important;
 }
 
+/*Pour le nom du document lorsqu'il est uploadé*/
+[data-theme='dark'] .ant-upload-list-item-name{
+    color: #888888 !important;
+}
+
+/*Pour le bouton de suppression d'un document*/
+[data-theme='dark'] .ant-upload-list-item-actions .anticon-delete {
+    color: #ff4d4f !important; /* Rouge */
+}
+
+[data-theme='dark'] .ant-upload-list-item-actions .ant-btn:hover .anticon-delete {
+    color: orange !important;
+}
 /*---------------------------------------------------------------------------------Documents----------------------------------------------------------------*/
 
 /*Pour le tableau*/
