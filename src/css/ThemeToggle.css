@@ -1,0 +1,604 @@
+/* Styles de base pour le thème clair */
+:root {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Styles du toggle */
+.theme-checkbox {
+    --toggle-size: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 3.50em;
+    height: 1.50em;
+    background: linear-gradient(to right, #f0f2f5 50%, #2a2a2a 50%) no-repeat;
+    background-size: 205%;
+    background-position: 0;
+    transition: 0.4s;
+    border-radius: 99em;
+    position: relative;
+    cursor: pointer;
+    font-size: var(--toggle-size);
+}
+  
+.theme-checkbox::before {
+    content: "";
+    width: 1.0em;
+    height: 1.0em;
+    position: absolute;
+    top: 0.238em;
+    left: 0.538em;
+    background: linear-gradient(to right, #f0f2f5 50%, #2a2a2a 50%) no-repeat;
+    background-size: 205%;
+    background-position: 100%;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+  
+.theme-checkbox:checked::before {
+    left: calc(100% - 1.0em - 0.538em);
+    background-position: 0;
+}
+  
+.theme-checkbox:checked {
+    background-position: 100%;
+}
+
+
+/* Styles pour le thème clair */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.ant-layout {
+    background-color: #f0f2f5;
+}
+
+.ant-layout-header {
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+
+.ant-menu {
+    background-color: #ffffff !important;
+}
+
+.ant-menu-item {
+    color: #000000 !important;
+}
+
+.site-title {
+    color: #000000 !important;
+}
+
+/*Pour la scrollbar du Chat*/
+.acss-1v5259w::-webkit-scrollbar {
+    width: 8px;  /* Largeur de la scrollbar */
+}
+
+.acss-1v5259w::-webkit-scrollbar-track {
+    background: #ffffff;  /* Couleur de fond */
+}
+
+.acss-1v5259w::-webkit-scrollbar-thumb {
+    background: #1677ff;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+.acss-1v5259w::-webkit-scrollbar-thumb:hover {
+    background: #0958d9;  /* Couleur au survol */
+}
+
+/*scrollbar de éditer */
+.acss-zrr53u::-webkit-scrollbar{
+    width : 4px !important;
+}
+
+.acss-zrr53u::-webkit-scrollbar-track {
+    background: #ffffff !important;  /* Couleur de fond */
+}
+
+.acss-zrr53u::-webkit-scrollbar-thumb {
+    background: #1677ff;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+.acss-zrr53u::-webkit-scrollbar-thumb:hover {
+    background: #0958d9;  /* Couleur au survol */
+}
+
+
+/*Pour la scrollbar de la fenêtre de visualisation d'un document*/
+.max-h-\[60vh\]::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-thumb {
+    background: #1677ff;
+    border-radius: 4px;
+}
+
+.max-h-\[60vh\]::-webkit-scrollbar-thumb:hover {
+    background: #0958d9;
+}
+
+
+/*Pour la scrollbar de la sidebar quand il y a beaucoup de chat*/
+.container-sidebar::-webkit-scrollbar{
+    width: 4px;
+}
+
+.container-sidebar::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+.container-sidebar::-webkit-scrollbar-thumb {
+    background: #dadad9;
+    border-radius: 4px;
+}
+
+.container-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #1677ff;
+}
+
+
+/*-------------------------------------------------------------------Header--------------------------------------------------*/
+[data-theme='dark'] {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+[data-theme='dark'] .site-title {
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-layout {
+    background-color: #141414 !important;
+}
+
+[data-theme='dark'] .ant-layout-header {
+    background-color: #1f1f1f !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+[data-theme='dark'] .ant-menu {
+    background-color: #1f1f1f !important;
+}
+
+[data-theme='dark'] .ant-menu-item {
+    color: #ffffff !important;
+}
+
+
+[data-theme='dark'] .ant-menu-item-selected::after {
+    border-bottom-color: #ff9933 !important;
+}
+
+[data-theme='dark'] .ant-menu-item:hover::after {
+    border-bottom-color: #ff9933 !important;
+}
+
+/*---------------------------------------------------------------------------------Chat----------------------------------------------------------------*/
+
+/*---dark---*/
+
+/*Pour le titre */
+[data-theme='dark'] h1 {
+    color: #ffffff !important;
+}
+
+/* Pour la zone d'écriture des messages */
+[data-theme='dark'] .ant-pro-chat-input-area {
+    background: #151515 !important;
+    border-radius: 20px !important;
+}
+
+/*Pour l'excriture des erreurs*/
+[data-theme='dark'] .ant-alert-message{
+    color: orange !important;
+}
+
+[data-theme='dark'] .ant-alert-error{
+    background-color: #2a2a2a !important;
+    border: 1px solid orange !important;
+}
+/* Pour les icones */
+[data-theme='dark'] .anticon {
+    color: #ff9933 !important;
+}
+
+/* Pour les zones de messages */
+[data-theme='dark'] .ant-pro-chat-list-item-message-content{
+    background-color: #1f1f1f !important;
+}
+
+/* Pour le texte des messages */
+[data-theme='dark'] .zcss-1hxup8p>p{
+    color: #ffffff !important;
+}
+
+/* Pour le bouton de retour vers le dernièr message */
+[data-theme='dark'] .acss-1kwsnuy{
+    color: orange !important;
+}
+
+/*Pour la zone de saisie de message*/
+[data-theme='dark'] .acss-6ckfqf{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .acss-6ckfqf::placeholder {
+    color: #666666 !important; /* Un gris clair pour une meilleure lisibilité */
+    opacity: 0.7; /* Optionnel : pour ajuster la transparence */
+}
+
+/*Lorsque que l'on clique sur la zone de saisie de message*/
+[data-theme='dark'] .ant-select-focused{
+    border : 0.2px solid orange !important;
+}
+
+/*Pour le texte de la zone de saisie de message*/
+[data-theme='dark'] [id^="rc_select_"] { /* car l'id est dynamique */
+    color: #ffffff !important;
+}
+
+/*Pour l'heure afficher au dessus des messages*/
+[data-theme='dark'] .acss-1s7pvt5{
+    color: #666666 !important;
+}
+
+/*Pour l'hover sur le boution supprime*/
+[data-theme='dark'] .ant-tooltip-open{
+    background-color: #2a2a2a !important;
+}
+
+/*Pour changer la couleur du fond de la pop up lorsuq'on appuye sur le bouton supprime*/
+[data-theme='dark'] .ant-popover-inner{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .ant-popover-arrow:before{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] .ant-popover-arrow::after{
+    background-color: #2a2a2a !important;
+}
+
+/*Pour changer la couleur du texte de la pop up lorsuq'on appuye sur le bouton supprime*/
+
+[data-theme='dark'] .ant-popconfirm-title{
+    color: #ffffff !important;
+}
+
+
+/*Pour changer la couleur des actions possibles sur un message*/
+
+[data-theme='dark'] .zcss-t61miv{
+    border: 1px solid #666666;
+}
+
+[data-theme='dark'] .zcss-t61miv>.ant-btn>.ant-btn-icon>.acss-1o4i853>.anticon{
+    color : #666666 !important;
+}
+
+[data-theme='dark'] .zcss-1jqu9f1>.ant-btn-icon>.anticon{
+    color : #666666 !important;
+}
+
+[data-theme='dark'] .ant-dropdown-menu{
+    background-color: #1f1f1f !important;
+}
+
+
+[data-theme = 'dark'] .ant-dropdown-menu-title-content{
+    color: #ffffff !important;
+}
+
+[data-theme = 'dark'] .ant-dropdown-menu-item:hover{
+    background-color: #666666 !important;
+}
+
+/*Pour changer la couleur de l'action editer */
+[data-theme = 'dark'] .acss-1oge91j{
+    border: 1px solid #1f1f1f !important;
+}
+
+[data-theme = 'dark'] .acss-1oge91j:hover{
+    border: 1px solid #666666 !important;
+}
+
+/*scrollbar de éditer */
+[data-theme = 'dark'] .acss-zrr53u::-webkit-scrollbar{
+    width : 4px !important;
+}
+
+[data-theme='dark'] .acss-zrr53u::-webkit-scrollbar-track {
+    background: #1f1f1f !important;  /* Couleur de fond */
+}
+
+[data-theme='dark'] .acss-zrr53u::-webkit-scrollbar-thumb {
+    background: #444444;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+[data-theme='dark'] .acss-zrr53u::-webkit-scrollbar-thumb:hover {
+    background: #555555;  /* Couleur au survol */
+}
+
+/*Pour le texte dans éditer*/
+[data-theme = 'dark'] .acss-zrr53u{
+    color: #ffffff !important;
+}
+
+/*Pour les bouttons dans éditer*/
+[data-theme='dark'] .css-7hj71p>.ant-btn-primary{
+    background-color: orange !important;
+}
+
+[data-theme='dark'] .css-7hj71p>.ant-btn-primary:hover{
+    background-color: darkorange !important;
+}
+
+[data-theme='dark'] .css-7hj71p>.ant-btn-default:hover{
+    color: orange !important;
+    border: 1px solid orange !important;
+}
+
+
+/*Pour la scrollbar du chat*/
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar {
+    width: 8px;  /* Largeur de la scrollbar */
+}
+
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-track {
+    background: #1f1f1f;  /* Couleur de fond */
+}
+
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-thumb {
+    background: #444444;  /* Couleur de la "poignée" */
+    border-radius: 4px;   /* Coins arrondis */
+}
+
+[data-theme='dark'] .acss-1v5259w::-webkit-scrollbar-thumb:hover {
+    background: #555555;  /* Couleur au survol */
+}
+
+/*---------------------------------------------------------------------------------InsertData----------------------------------------------------------------*/
+
+[data-theme='dark'] .ant-upload-drag{
+    background: #1f1f1f !important;
+    border : 1px dashed #666666 !important;
+}
+
+[data-theme='dark'] .ant-upload-drag:hover{
+    border : 1px dashed orange !important;
+}
+
+[data-theme='dark'] .ant-upload-text{
+    color: #ffffff !important;
+}
+
+[data-theme='dark'] .ant-upload-hint{
+    color: #666666 !important;
+}
+
+/*Pour le nom du document lorsqu'il est uploadé*/
+[data-theme='dark'] .ant-upload-list-item-name{
+    color: #888888 !important;
+}
+
+/*Pour le bouton de suppression d'un document*/
+[data-theme='dark'] .ant-upload-list-item-actions .anticon-delete {
+    color: #ff4d4f !important; /* Rouge */
+}
+
+[data-theme='dark'] .ant-upload-list-item-actions .ant-btn:hover .anticon-delete {
+    color: orange !important;
+}
+/*---------------------------------------------------------------------------------Documents----------------------------------------------------------------*/
+
+/*Pour le tableau*/
+[data-theme='dark'] .ant-table{
+    color : white;
+    background-color: #1f1f1f !important;
+}
+
+/*Survol d'une ligne du tableau*/
+
+[data-theme='dark'] .ant-table-cell-row-hover{
+    background-color: #2a2a2a !important;
+}
+[data-theme='dark'] .ant-table-tbody > tr:hover > td {
+    background-color: #2a2a2a !important;
+    transition: background-color 0.3s;
+}
+
+/*Pour le titre du tableau*/
+[data-theme='dark'] .ant-table-thead>tr>th{
+    color : white !important;
+    background-color: #2a2a2a !important;
+}
+
+/*Pour la ligne du tableau*/
+[data-theme='dark'] .ant-table-thead >tr>th{
+    border-bottom: 1px solid #444444 !important;
+}
+
+/*Pour le séparateur de colonne*/
+[data-theme='dark'] .ant-table-thead >tr>th::before{
+    background-color: #444444 !important;
+}
+
+/*Pour la ligne de la table*/
+[data-theme='dark'] .ant-table-cell{
+    border-bottom: 1px solid #444444 !important;
+}
+
+
+/*Pour la pagination en bas du tableau*/
+[data-theme='dark'] .ant-pagination-item-active{
+    background-color: #2a2a2a !important;
+    border-color: orange !important;
+    
+}
+
+/*Pour le texte de la ligne active du tableau*/
+[data-theme='dark'] .ant-pagination-item-active>a{
+    color: orange !important;
+    
+}
+
+/*Pour l'icône de la flèche précédente*/
+[data-theme='dark'] .ant-pagination-prev>.ant-pagination-item-link>.anticon-left{
+    color: #666666 !important;
+}
+
+/*Pour l'icône de la flèche suivante*/
+[data-theme='dark'] .ant-pagination-next>.ant-pagination-item-link>.anticon-right{
+    color: #666666 !important;
+}
+
+/*Pour le logo de visualisation des documents*/
+[data-theme='dark'] .text-blue-500{
+    color: orange !important;
+}
+
+[data-theme='dark'] .text-blue-500:hover{
+    color: darkorange !important;
+}
+
+[data-theme='dark'] .ant-popconfirm-description{
+    color: orange !important;
+}
+
+/*Pour la confirmation de suppression d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-color-dangerous.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled){
+    background-color: orange !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-color-dangerous.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled):hover {
+    background-color: darkorange !important;
+}
+
+/*Pour annuler la suppression d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-outlined:not(:disabled):not(.ant-btn-disabled):hover {
+    color: orange !important;
+    border: 1px solid orange !important;
+}
+
+/*Lorsqu'il y a pas de document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder{
+    background-color: #1f1f1f !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder:hover>td{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-empty-normal .ant-empty-description{
+    color: #ffffff !important;
+}
+
+/*Pour le hover du boutton supprimer d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-color-dangerous.ant-btn-variant-text:hover{
+    color: orange !important;
+    background-color: transparent !important;
+}
+
+/*La fenêtre de visualisation d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-modal .ant-modal-content{
+    background-color: #2a2a2a !important;
+}
+
+/*Pour le header de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-modal .ant-modal-header{
+    background-color: #2a2a2a !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-modal .ant-modal-title {
+    color: #888888 !important;
+}
+
+/*Lorsqu'on survole le bouton de fermeture de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] .ant-modal-close:hover .ant-modal-close-icon {
+    color: rgb(247, 65, 111) !important;
+}
+
+/*Pour le texte de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-typography{
+    color: #ffffff !important;
+}
+
+/*Pour la scrollbar de la fenêtre de visualisation d'un document*/
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar {
+    width: 6px;
+}
+
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar-track {
+    background: #1f1f1f;
+}
+
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 4px;
+}
+
+[data-theme='dark'] .max-h-\[60vh\]::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+/*---------------------------------------------------------Sidebar----------------------------------------------------------------*/
+
+[data-theme='dark'] .container-sidebar{
+    background-color: #1f1f1f !important;
+    border-right: 1px solid #1f1f1f !important;
+}
+
+/*Pour la scrollbar de la sidebar*/
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar{
+    width: 4px;
+}
+
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar-track {
+    background: #1f1f1f;
+}
+
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 4px;
+}
+
+[data-theme='dark'] .container-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+/*Pour le bouton de création d'un nouveau chat*/
+[data-theme='dark'] .btn-new-chat{
+    background-color: orange !important;
+}
+
+[data-theme='dark'] .btn-new-chat:hover{
+    background-color: #fbda33 !important;
+}
+
+/*Pour l'onglet selectionné dans la sidebar*/
+[data-theme='dark'] .ant-menu-item-selected {
+    background-color: #444444 !important;
+}
+
+[data-theme='dark'] .ant-menu-item:hover {
+    background-color: #2a2a2a !important;
+}
+
