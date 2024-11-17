@@ -602,3 +602,26 @@ body {
     background-color: #2a2a2a !important;
 }
 
+/*Pour la suppression d'un chat*/
+[data-theme='dark'] .group:hover .hover\:text-red-500:hover {
+    color: #ff4d4f !important;
+  }
+  
+  [data-theme='dark'] .group button {
+    color: #666666;
+  }
+  
+  [data-theme='dark'] .group:hover button {
+    color: #888888;
+  }
+
+  /*Boutton confirmation de suppression d'un chat*/
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-solid{
+    background-color: orange !important;
+}
+
+[data-theme='dark'] :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-solid:hover{
+    background-color: darkorange !important;
+}
+
