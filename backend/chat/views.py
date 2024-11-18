@@ -123,11 +123,19 @@ class DocumentListView(APIView):
     def delete(self, request, document_id):
         try:
             document = Document.objects.get(id=document_id)
-            vector_store_service.delete_document(str(document.id))
+            # Supprimer d'abord de ChromaDB
+            vector_store_service.delete_document(document.chroma_id)
+            # Puis supprimer de la base de données
             document.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Document.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error deleting document: {str(e)}")
+            return Response(
+                {'error': 'An error occurred while deleting the document'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class DocumentContentView(APIView):
     def get(self, request, document_id):

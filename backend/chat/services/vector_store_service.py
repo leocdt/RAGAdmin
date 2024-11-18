@@ -69,10 +69,24 @@ class VectorStoreService:
     def delete_document(self, chroma_id: str) -> None:
         """Delete all chunks of a document from the vector store."""
         try:
-            # Utiliser where pour trouver tous les chunks associés au chroma_id
-            self.vector_store._collection.delete(
-                where={"chroma_id": chroma_id}
-            )
+            # Récupérer tous les documents
+            results = self.vector_store.get()
+            
+            # Trouver les IDs des chunks à supprimer
+            ids_to_delete = []
+            for i, metadata in enumerate(results['metadatas']):
+                if metadata.get('chroma_id') == chroma_id:
+                    ids_to_delete.append(results['ids'][i])
+            
+            if ids_to_delete:
+                # Supprimer les chunks
+                self.vector_store._collection.delete(
+                    ids=ids_to_delete
+                )
+                logger.info(f"Deleted {len(ids_to_delete)} chunks for document with chroma_id {chroma_id}")
+            else:
+                logger.warning(f"No chunks found for document with chroma_id {chroma_id}")
+                
         except Exception as e:
             logger.error(f"Error deleting document: {str(e)}")
             raise
