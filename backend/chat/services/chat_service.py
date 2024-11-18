@@ -64,6 +64,7 @@ class ChatService:
             Question: {input}
 
             Remember: First determine if the question requires document context. If not, ignore the document context completely and answer based on your general knowledge. Do not make assumptions beyond the provided information or the document context.
+            Respond in the same language as the question.
             """
         )
 
