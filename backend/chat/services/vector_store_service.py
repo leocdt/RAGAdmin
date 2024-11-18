@@ -15,20 +15,16 @@ class VectorStoreService:
     def __init__(self):
         self.embeddings = FastEmbedEmbeddings()
         
-        # Force delete existing database
+        # Initialize vector store with existing database if it exists
         persist_dir = settings.CHROMA_SETTINGS["persist_directory"]
-        if os.path.exists(persist_dir):
-            logger.info(f"Deleting existing database at {persist_dir}")
-            shutil.rmtree(persist_dir)
-        
-        # Create fresh vector store
         self.vector_store = Chroma(
             persist_directory=persist_dir,
             embedding_function=self.embeddings,
             collection_name="documents"
         )
         
-        logger.info("Initialized fresh Chroma database")
+        collection_size = len(self.vector_store.get()['ids'])
+        logger.info(f"Initialized Chroma database with {collection_size} existing documents")
 
     def add_documents(self, documents: List[Document]) -> None:
         """Add documents to the vector store."""
