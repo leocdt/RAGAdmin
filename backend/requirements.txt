@@ -3,8 +3,8 @@ djangorestframework==3.14.0
 django-cors-headers==4.3.0
 chromadb==0.4.15
 PyPDF2==3.0.1
-langchain==0.1.0
-langchain-community==0.0.10
+langchain
+langchain-community
 python-dotenv==1.0.0
 fastembed
 langchain-text-splitters
