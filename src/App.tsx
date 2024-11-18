@@ -5,7 +5,7 @@ import Header from './components/Header';
 import Chat from './pages/Chat';
 import InsertData from './pages/InsertData';
 import Documents from './pages/Documents';
-
+import './scss/main.scss';
 
 const { Content } = Layout;
 

@@ -1,0 +1,102 @@
+// Variables communes pour réutilisation
+$bg-primary: map-get(map-get($colors, 'light'), 'bg-primary');
+$bg-secondary: map-get(map-get($colors, 'light'), 'bg-secondary');
+$bg-tertiary: map-get(map-get($colors, 'light'), 'bg-tertiary');
+$text-primary: map-get(map-get($colors, 'light'), 'text-primary');
+$text-secondary: map-get(map-get($colors, 'light'), 'text-secondary');
+$border: map-get(map-get($colors, 'light'), 'border');
+$accent: map-get(map-get($colors, 'light'), 'accent');
+$accent-hover: map-get(map-get($colors, 'light'), 'accent-hover');
+
+/* Styles pour le thème clair */
+body {
+  background-color: $bg-primary;
+  color: $text-primary;
+}
+
+// Layout
+.ant-layout {
+  background-color: $bg-tertiary;
+}
+
+// Header
+.ant-layout-header {
+  background-color: $bg-primary !important;
+  box-shadow: map-get(map-get($shadows, 'light'), 'sm') !important;
+  position: relative !important;
+  z-index: map-get($z-layers, 'header') !important;
+}
+
+// Menu
+.ant-menu {
+  background-color: $bg-primary !important;
+
+  &-item {
+    color: $text-primary !important;
+  }
+}
+
+// Titre du site
+.site-title {
+  color: $text-primary !important;
+}
+
+// Mixin pour les styles de scrollbar communs
+@mixin scrollbar-styles($width, $track-color, $thumb-color, $thumb-hover-color) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: map-get($sizes, 'border-radius');
+
+    &:hover {
+      background: $thumb-hover-color;
+    }
+  }
+}
+
+// Pour la scrollbar du Chat
+.acss-1v5259w {
+  @include scrollbar-styles(
+    map-get($sizes, 'scrollbar', 'medium'),
+    $bg-primary,
+    $accent,
+    $accent-hover
+  );
+}
+
+// Pour la scrollbar d'édition
+.acss-zrr53u {
+  @include scrollbar-styles(
+    map-get($sizes, 'scrollbar', 'small'),
+    $bg-primary,
+    $accent,
+    $accent-hover
+  );
+}
+
+// Pour la scrollbar de la fenêtre de visualisation d'un document
+.max-h-\[60vh\] {
+  @include scrollbar-styles(
+    map-get($sizes, 'scrollbar', 'medium'),
+    $bg-primary,
+    $accent,
+    $accent-hover
+  );
+}
+
+// Pour la scrollbar de la sidebar
+.container-sidebar {
+  @include scrollbar-styles(
+    map-get($sizes, 'scrollbar', 'small'),
+    $bg-primary,
+    $border,
+    $accent
+  );
+}

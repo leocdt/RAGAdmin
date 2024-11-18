@@ -1,0 +1,85 @@
+[data-theme='dark'] {
+  // Variables communes pour réutilisation
+  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
+  $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
+  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
+  $border: map-get(map-get($colors, 'dark'), 'border');
+  $accent: map-get(map-get($colors, 'dark'), 'accent');
+  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
+  $error: map-get(map-get($colors, 'dark'), 'error');
+
+  // Pour le conteneur de la sidebar
+  .container-sidebar {
+    background-color: $bg-primary !important;
+    border-right: 1px solid $bg-primary !important;
+
+    // Pour la scrollbar de la sidebar
+    &::-webkit-scrollbar {
+      width: map-get($sizes, 'scrollbar', 'small');
+    }
+
+    &::-webkit-scrollbar-track {
+      background: $bg-primary;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $border;
+      border-radius: map-get($sizes, 'border-radius');
+
+      &:hover {
+        background: #555555;
+      }
+    }
+  }
+
+  // Pour le bouton de création d'un nouveau chat
+  .btn-new-chat {
+    background-color: $accent !important;
+
+    &:hover {
+      background-color: $accent-hover !important;
+    }
+  }
+
+  // Pour les éléments du menu
+  .ant-menu {
+    &-item {
+      color: $text-secondary !important;
+
+      // Pour l'onglet sélectionné dans la sidebar
+      &-selected {
+        background-color: $border !important;
+      }
+
+      &:hover {
+        background-color: $bg-secondary !important;
+      }
+    }
+  }
+
+  // Pour la suppression d'un chat
+  .group {
+    button {
+      color: $text-secondary;
+
+      &:hover {
+        color: lighten($text-secondary, 10%);
+      }
+    }
+
+    &:hover .hover\:text-red-500:hover {
+      color: $error !important;
+    }
+  }
+
+  // Pour le bouton de confirmation de suppression d'un chat
+  :where(.css-dev-only-do-not-override-1hpnbz2) {
+    &.ant-btn-variant-solid {
+      background-color: $accent !important;
+
+      &:hover {
+        background-color: $accent-hover !important;
+      }
+    }
+  }
+}
