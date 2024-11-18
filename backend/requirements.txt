@@ -11,3 +11,4 @@ langchain-text-splitters
 pdfplumber
 ollama
 sentence_transformers
+tzdata

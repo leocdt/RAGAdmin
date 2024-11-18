@@ -30,15 +30,32 @@ class ChatView(APIView):
     def post(self, request):
         message = request.data.get('message', '')
         history = request.data.get('history', [])
+        chat_id = request.data.get('chatId', '')
         
-        if not message:
+        # Map the history roles correctly
+        formatted_history = []
+        for msg in history:
+            role = msg.get('role', '')
+            # Map 'ai' role to 'assistant'
+            if role == 'ai':
+                role = 'assistant'
+            formatted_history.append({
+                'role': role,
+                'content': msg.get('content', '')
+            })
+        
+        if not message or not chat_id:
             return Response(
-                {'error': 'No message provided'},
+                {'error': 'No message or chat ID provided'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
-            response = chat_service.generate_response(message, history)
+            response = chat_service.generate_response(
+                message, 
+                chat_id, 
+                formatted_history
+            )
             
             def stream_response():
                 for chunk in response:
