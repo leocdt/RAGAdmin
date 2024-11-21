@@ -1,0 +1,51 @@
+[data-theme='dark'] {
+  // Variables communes pour réutilisation
+  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
+  $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
+  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
+  $border: map-get(map-get($colors, 'dark'), 'border');
+  $accent: map-get(map-get($colors, 'dark'), 'accent');
+  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
+  $error: map-get(map-get($colors, 'dark'), 'error');
+
+  // Pour la zone de dépôt de fichiers
+  .ant-upload-drag {
+    background: $bg-primary !important;
+    border: 1px dashed $border !important;
+
+    &:hover {
+      border: 1px dashed $accent !important;
+    }
+  }
+
+  // Pour le texte de la zone de dépôt
+  .ant-upload-text {
+    color: $text-primary !important;
+  }
+
+  // Pour le texte d'aide
+  .ant-upload-hint {
+    color: $text-secondary !important;
+  }
+
+  // Pour la liste des fichiers uploadés
+  .ant-upload-list {
+    // Pour le nom du document lorsqu'il est uploadé
+    &-item-name {
+      color: $text-secondary !important;
+    }
+
+    // Pour les actions sur les documents
+    &-item-actions {
+      // Pour le bouton de suppression d'un document
+      .anticon-delete {
+        color: $error !important;
+      }
+
+      // Pour le survol du bouton de suppression
+      .ant-btn:hover .anticon-delete {
+        color: $accent !important;
+      }
+    }
+  }
+}

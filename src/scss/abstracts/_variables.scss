@@ -1,0 +1,81 @@
+// Couleurs
+$colors: (
+  'light': (
+    'bg-primary': #ffffff,
+    'bg-secondary': #f0f2f5,
+    'text-primary': #000000,
+    'text-secondary': #666666,
+    'border': #dadad9,
+    'accent': #1677ff,
+    'accent-hover': #0958d9,
+    'error': #ff4d4f,
+    'shadow': rgba(0, 0, 0, 0.3),
+    'hover': rgba(0, 0, 0, 0.1)
+  ),
+  'dark': (
+    'bg-primary': #1f1f1f,
+    'bg-secondary': #2a2a2a,
+    'bg-tertiary': #141414,
+    'text-primary': #ffffff,
+    'text-secondary': #888888,
+    'border': #444444,
+    'accent': #ff9933,
+    'accent-hover': darkorange,
+    'error': #ff4d4f,
+    'input-bg': #151515,
+    'hover': rgba(255, 255, 255, 0.1)
+  )
+);
+
+// Tailles
+$sizes: (
+  'scrollbar': (
+    'large': 8px,
+    'medium': 6px,
+    'small': 4px
+  ),
+  'toggle': 16px,
+  'border-radius': 4px,
+  'spacing': (
+    'xs': 4px,
+    'sm': 8px,
+    'md': 16px,
+    'lg': 24px
+  )
+);
+
+// Transitions
+$transitions: (
+  'default': 0.3s ease,
+  'toggle': 0.4s ease,
+  'hover': 0.2s ease-in-out
+);
+
+// Z-index
+$z-layers: (
+  'header': 1000,
+  'modal': 1050,
+  'dropdown': 1060
+);
+
+// Breakpoints
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px
+);
+
+// Shadows
+$shadows: (
+  'light': (
+    'sm': '0 2px 8px rgba(0, 0, 0, 0.1)',
+    'md': '0 4px 12px rgba(0, 0, 0, 0.15)',
+    'lg': '0 8px 24px rgba(0, 0, 0, 0.2)'
+  ),
+  'dark': (
+    'sm': '0 2px 8px rgba(0, 0, 0, 0.3)',
+    'md': '0 4px 12px rgba(0, 0, 0, 0.4)',
+    'lg': '0 8px 24px rgba(0, 0, 0, 0.5)'
+  )
+);

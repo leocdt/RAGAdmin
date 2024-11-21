@@ -56,6 +56,28 @@ const Chat: React.FC = () => {
     navigate(`/chat/${newChatId}`);
   };
 
+  const handleDeleteChat = (chatIdToDelete: string) => {
+    // Trouver le prochain chat avant la suppression
+    const remainingChats = chatSessions.filter(session => session.id !== chatIdToDelete);
+    const nextChat = remainingChats.length > 0 ? remainingChats[0] : null;
+  
+    // Mettre à jour les sessions
+    setChatSessions(remainingChats);
+    localStorage.setItem('chat_sessions', JSON.stringify(remainingChats));
+  
+    // Si c'était le dernier chat, en créer un nouveau
+    if (remainingChats.length === 0) {
+      const newChatId = uuidv4();
+      const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+      setChatSessions([newSession]);
+      localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
+      navigate(`/chat/${newChatId}`);
+    } else if (chatId === chatIdToDelete && nextChat) {
+      // Si le chat supprimé était le chat actuel, naviguer vers le premier chat restant
+      navigate(`/chat/${nextChat.id}`);
+    }
+  };
+
   const handleMessageSend = async (messages: ChatMessage[]) => {
     try {
       const lastMessage = messages[messages.length - 1]?.content || '';
@@ -117,6 +139,7 @@ const Chat: React.FC = () => {
       <ChatSidebar 
         chats={chatSessions}
         onNewChat={handleNewChat}
+        onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
       />
       <div className="flex-1">

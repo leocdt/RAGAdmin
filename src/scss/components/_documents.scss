@@ -1,0 +1,152 @@
+[data-theme='dark'] {
+  // Pour le tableau
+  .ant-table {
+    color: map-get(map-get($colors, 'dark'), 'text-primary');
+    background-color: map-get(map-get($colors, 'dark'), 'bg-primary') !important;
+
+    // Pour le header du tableau
+    &-thead > tr > th {
+      color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
+      background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
+      border-bottom: 1px solid map-get(map-get($colors, 'dark'), 'border') !important;
+
+      // Pour les séparateurs de colonne sur le header du tableau
+      &::before {
+        background-color: map-get(map-get($colors, 'dark'), 'border') !important;
+      }
+    }
+
+    // Pour les lignes du tableau en dessous du header
+    &-tbody > tr {
+      &:hover > td,
+      .ant-table-cell-row-hover {
+        background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
+        transition: background-color map-get($transitions, 'default');
+      }
+    }
+
+    // Pour les cellules du tableau
+    &-cell {
+      border-bottom: 1px solid map-get(map-get($colors, 'dark'), 'border') !important;
+    }
+  }
+
+  // Variables communes pour réutilisation
+  $accent: map-get(map-get($colors, 'dark'), 'accent');
+  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
+  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
+  $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
+  $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
+  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
+
+  // Pour la pagination
+  .ant-pagination {
+    &-item-active {
+      background-color: $bg-secondary !important;
+      border-color: $accent !important;
+
+      > a {
+        color: $accent !important;
+      }
+    }
+
+    &-prev,
+    &-next {
+      .ant-pagination-item-link .anticon {
+        color: $text-secondary !important;
+      }
+    }
+  }
+
+  // Pour les actions sur les documents
+  .text-blue-500 {
+    color: $accent !important;
+
+    &:hover {
+      color: $accent-hover !important;
+    }
+  }
+
+  // Pour les dialogues de confirmation
+  .ant-popconfirm-description {
+    color: $accent !important;
+  }
+
+  // Pour les éléments avec le sélecteur css-dev-only-do-not-override
+  :where(.css-dev-only-do-not-override-1hpnbz2) {
+    // Pour les boutons d'actions
+    &.ant-btn-color-dangerous.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled) {
+      background-color: $accent !important;
+
+      &:hover {
+        background-color: $accent-hover !important;
+      }
+    }
+
+    &.ant-btn-variant-outlined:not(:disabled):not(.ant-btn-disabled):hover {
+      color: $accent !important;
+      border: 1px solid $accent !important;
+    }
+
+    &.ant-btn-color-dangerous.ant-btn-variant-text:hover {
+      color: $accent !important;
+      background-color: transparent !important;
+    }
+
+    // Pour l'état vide du tableau
+    &.ant-table-wrapper .ant-table-tbody > tr.ant-table-placeholder {
+      background-color: $bg-primary !important;
+
+      &:hover > td {
+        background-color: $bg-secondary !important;
+      }
+    }
+
+    // Pour la description de l'état vide
+    &.ant-empty-normal .ant-empty-description {
+      color: $text-primary !important;
+    }
+
+    // Pour les styles de la modal
+    &.ant-modal {
+      .ant-modal-content,
+      .ant-modal-header {
+        background-color: $bg-secondary !important;
+      }
+
+      .ant-modal-title {
+        color: $text-secondary !important;
+      }
+    }
+
+    // Pour la typographie
+    &.ant-typography {
+      color: $text-primary !important;
+    }
+  }
+
+  // Pour le bouton de fermeture d'une visualisation
+  .ant-modal-close:hover .ant-modal-close-icon {
+    color: map-get(map-get($colors, 'dark'), 'error') !important;
+  }
+
+  // Pour les barres de défilement
+  [class*="max-h-[60vh]"] {
+    &::-webkit-scrollbar {
+      width: map-get($sizes, 'scrollbar', 'medium');
+    }
+
+    &::-webkit-scrollbar-track {
+      background: $bg-primary;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: map-get(map-get($colors, 'dark'), 'border');
+      border-radius: map-get($sizes, 'border-radius');
+
+      &:hover {
+        background: #555555;
+      }
+    }
+  }
+}
