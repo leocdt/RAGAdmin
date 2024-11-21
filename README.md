@@ -1,9 +1,13 @@
 # RAGAdmin  
 **Local RAG (Retrieval-Augmented Generation) for the [La Poste](https://www.laposte.fr/) company**
 
+<br>
+
 <p align="center">
 <img src="https://i.ibb.co/fYWxs4g/ragadmin.png" alt="RAGAdmin" width="500">
 </p>
+
+<br>
 
 ## Table des matières  
 1. [Description](#description)   
