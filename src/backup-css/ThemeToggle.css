@@ -586,11 +586,11 @@ body {
 
 /*Pour le bouton de création d'un nouveau chat*/
 [data-theme='dark'] .btn-new-chat{
-    background-color: orange !important;
+    background-color: #ffd342 !important;
 }
 
 [data-theme='dark'] .btn-new-chat:hover{
-    background-color: #fbda33 !important;
+    background-color: #fbb533 !important;
 }
 
 /*Pour l'onglet selectionné dans la sidebar*/

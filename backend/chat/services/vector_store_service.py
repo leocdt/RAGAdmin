@@ -15,20 +15,16 @@ class VectorStoreService:
     def __init__(self):
         self.embeddings = FastEmbedEmbeddings()
         
-        # Force delete existing database
+        # Initialize vector store with existing database if it exists
         persist_dir = settings.CHROMA_SETTINGS["persist_directory"]
-        if os.path.exists(persist_dir):
-            logger.info(f"Deleting existing database at {persist_dir}")
-            shutil.rmtree(persist_dir)
-        
-        # Create fresh vector store
         self.vector_store = Chroma(
             persist_directory=persist_dir,
             embedding_function=self.embeddings,
             collection_name="documents"
         )
         
-        logger.info("Initialized fresh Chroma database")
+        collection_size = len(self.vector_store.get()['ids'])
+        logger.info(f"Initialized Chroma database with {collection_size} existing documents")
 
     def add_documents(self, documents: List[Document]) -> None:
         """Add documents to the vector store."""
@@ -73,10 +69,24 @@ class VectorStoreService:
     def delete_document(self, chroma_id: str) -> None:
         """Delete all chunks of a document from the vector store."""
         try:
-            # Utiliser where pour trouver tous les chunks associés au chroma_id
-            self.vector_store._collection.delete(
-                where={"chroma_id": chroma_id}
-            )
+            # Récupérer tous les documents
+            results = self.vector_store.get()
+            
+            # Trouver les IDs des chunks à supprimer
+            ids_to_delete = []
+            for i, metadata in enumerate(results['metadatas']):
+                if metadata.get('chroma_id') == chroma_id:
+                    ids_to_delete.append(results['ids'][i])
+            
+            if ids_to_delete:
+                # Supprimer les chunks
+                self.vector_store._collection.delete(
+                    ids=ids_to_delete
+                )
+                logger.info(f"Deleted {len(ids_to_delete)} chunks for document with chroma_id {chroma_id}")
+            else:
+                logger.warning(f"No chunks found for document with chroma_id {chroma_id}")
+                
         except Exception as e:
             logger.error(f"Error deleting document: {str(e)}")
             raise

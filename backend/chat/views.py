@@ -30,15 +30,32 @@ class ChatView(APIView):
     def post(self, request):
         message = request.data.get('message', '')
         history = request.data.get('history', [])
+        chat_id = request.data.get('chatId', '')
         
-        if not message:
+        # Map the history roles correctly
+        formatted_history = []
+        for msg in history:
+            role = msg.get('role', '')
+            # Map 'ai' role to 'assistant'
+            if role == 'ai':
+                role = 'assistant'
+            formatted_history.append({
+                'role': role,
+                'content': msg.get('content', '')
+            })
+        
+        if not message or not chat_id:
             return Response(
-                {'error': 'No message provided'},
+                {'error': 'No message or chat ID provided'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
-            response = chat_service.generate_response(message, history)
+            response = chat_service.generate_response(
+                message, 
+                chat_id, 
+                formatted_history
+            )
             
             def stream_response():
                 for chunk in response:
@@ -123,11 +140,19 @@ class DocumentListView(APIView):
     def delete(self, request, document_id):
         try:
             document = Document.objects.get(id=document_id)
-            vector_store_service.delete_document(str(document.id))
+            # Supprimer d'abord de ChromaDB
+            vector_store_service.delete_document(document.chroma_id)
+            # Puis supprimer de la base de données
             document.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Document.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error deleting document: {str(e)}")
+            return Response(
+                {'error': 'An error occurred while deleting the document'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class DocumentContentView(APIView):
     def get(self, request, document_id):
