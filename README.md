@@ -1,11 +1,15 @@
 # RAGAdmin  
-**Local RAG (Retrieval-Augmented Generation) for the La Poste company**
+**Local RAG (Retrieval-Augmented Generation) for the [La Poste](https://www.laposte.fr/) company**
+
+<p align="center">
+<img src="https://i.ibb.co/fYWxs4g/ragadmin.png" alt="RAGAdmin" width="500">
+</p>
 
 ## Table des matières  
 1. [Description](#description)   
 2. [Installation](#installation)  
-    - [Linux](#linux)  
-    - [Mac](#mac)   
+    - [Linux & Mac](#linux-mac)  
+    - [Windows](#windows)   
 3. [Contributions](#contributions)  
 4. [Licence](#licence)  
 
@@ -18,7 +22,7 @@
 
 ## Installation  
 
-### 3.1 Linux & Mac 
+### 2.1 Linux & Mac 
    
 Cloner le projet : **git clone https://github.com/leocdt/RAGAdmin.git**  
 Dans RAGAdmin/backend, créer un environnement virtuel : **python3 -m venv venv**  
@@ -31,5 +35,23 @@ Dans un autre terminal
 /RAGAdmin, installer npm : **npm install**  
 Lancer le front : **npm start**  
    
+### 2.2 Windows  
+Dans RAGAdmin/backend, installer les modules : **pip install -r requirements.txt**  
+Lancer backend : **python manage.py runserver**
+
+Dans un autre terminal   
+
+/RAGAdmin, installer npm : **npm install**  
+Lancer le front : **npm start**  
+
+---
+
+## Contributions  
 
 
+
+
+---
+
+## Licence  
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
