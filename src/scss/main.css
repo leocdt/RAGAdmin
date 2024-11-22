@@ -379,6 +379,27 @@ button:focus {
   border-bottom-color: #ff9933 !important;
 }
 
+[data-theme=dark] .ant-select-selector {
+  background-color: #2a2a2a !important;
+  border-color: #444444 !important;
+  color: #ffffff !important;
+}
+[data-theme=dark] .ant-select-arrow {
+  color: #888888 !important;
+}
+[data-theme=dark] .ant-select-dropdown {
+  background-color: #2a2a2a !important;
+}
+[data-theme=dark] .ant-select-dropdown .ant-select-item {
+  color: #ffffff !important;
+}
+[data-theme=dark] .ant-select-dropdown .ant-select-item-option-selected {
+  background-color: #ff9933 !important;
+}
+[data-theme=dark] .ant-select-dropdown .ant-select-item:hover {
+  background-color: #141414 !important;
+}
+
 /* Styles pour le thème clair */
 body {
   background-color: #ffffff;

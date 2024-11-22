@@ -4,11 +4,13 @@ import type { ChatMessage } from '@ant-design/pro-chat';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
+import ModelSidebar from '../components/ModelSidebar';
 
 interface ChatSession {
   id: string;
   title: string;
   messages: Record<string, ChatMessage>;
+  model?: string;
 }
 
 const Chat: React.FC = () => {
@@ -19,25 +21,32 @@ const Chat: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
+  const [currentModel, setCurrentModel] = useState<string>('llama3.1:8b');
   const chatKey = useRef(0);
 
   useEffect(() => {
     if (!chatId && chatSessions.length === 0) {
       const newChatId = uuidv4();
-      const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+      const newSession = { 
+        id: newChatId, 
+        title: 'New Chat', 
+        messages: {},
+        model: currentModel 
+      };
       setChatSessions([newSession]);
       localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
       navigate(`/chat/${newChatId}`);
     } else if (!chatId && chatSessions.length > 0) {
       navigate(`/chat/${chatSessions[0].id}`);
     }
-  }, [chatId, chatSessions, navigate]);
+  }, [chatId, chatSessions, navigate, currentModel]);
 
   useEffect(() => {
     if (chatId) {
       const session = chatSessions.find(s => s.id === chatId);
       if (session) {
         setCurrentChat(session.messages);
+        setCurrentModel(session.model || 'llama3.1:8b');
       } else {
         setCurrentChat({});
       }
@@ -45,9 +54,29 @@ const Chat: React.FC = () => {
     }
   }, [chatId, chatSessions]);
 
+  const handleModelChange = (model: string) => {
+    setCurrentModel(model);
+    if (chatId) {
+      setChatSessions(prev => {
+        const updated = prev.map(session =>
+          session.id === chatId
+            ? { ...session, model }
+            : session
+        );
+        localStorage.setItem('chat_sessions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
   const handleNewChat = () => {
     const newChatId = uuidv4();
-    const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+    const newSession = { 
+      id: newChatId, 
+      title: 'New Chat', 
+      messages: {},
+      model: currentModel 
+    };
     setChatSessions(prev => {
       const updated = [...prev, newSession];
       localStorage.setItem('chat_sessions', JSON.stringify(updated));
@@ -57,23 +86,24 @@ const Chat: React.FC = () => {
   };
 
   const handleDeleteChat = (chatIdToDelete: string) => {
-    // Trouver le prochain chat avant la suppression
     const remainingChats = chatSessions.filter(session => session.id !== chatIdToDelete);
     const nextChat = remainingChats.length > 0 ? remainingChats[0] : null;
   
-    // Mettre à jour les sessions
     setChatSessions(remainingChats);
     localStorage.setItem('chat_sessions', JSON.stringify(remainingChats));
   
-    // Si c'était le dernier chat, en créer un nouveau
     if (remainingChats.length === 0) {
       const newChatId = uuidv4();
-      const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+      const newSession = { 
+        id: newChatId, 
+        title: 'New Chat', 
+        messages: {},
+        model: currentModel 
+      };
       setChatSessions([newSession]);
       localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
       navigate(`/chat/${newChatId}`);
     } else if (chatId === chatIdToDelete && nextChat) {
-      // Si le chat supprimé était le chat actuel, naviguer vers le premier chat restant
       navigate(`/chat/${nextChat.id}`);
     }
   };
@@ -95,7 +125,8 @@ const Chat: React.FC = () => {
         body: JSON.stringify({ 
           message: lastMessage,
           chatId: chatId,
-          history: history
+          history: history,
+          model: currentModel
         }),
       });
 
@@ -116,7 +147,12 @@ const Chat: React.FC = () => {
       setChatSessions(prev => {
         const updated = prev.map(session => 
           session.id === chatId 
-            ? { ...session, messages, title: getFirstUserMessage(messages) || session.title }
+            ? { 
+                ...session, 
+                messages, 
+                title: getFirstUserMessage(messages) || session.title,
+                model: currentModel
+              }
             : session
         );
         localStorage.setItem('chat_sessions', JSON.stringify(updated));
@@ -158,8 +194,11 @@ const Chat: React.FC = () => {
           />
         )}
       </div>
+      <ModelSidebar
+        currentModel={currentModel}
+        onModelChange={handleModelChange}
+      />
     </div>
-
   );
 };
 
