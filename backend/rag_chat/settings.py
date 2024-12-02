@@ -91,7 +91,7 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only, configure properly for pr
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-OLLAMA_MODEL = "llama3.1:8b"
+OLLAMA_MODEL = "llama3.2:3b"
 OLLAMA_HOST = "http://localhost:11434"  # Default Ollama host
 CHROMA_SETTINGS = {
     "persist_directory": "./chroma_db",

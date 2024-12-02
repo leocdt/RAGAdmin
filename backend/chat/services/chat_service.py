@@ -19,7 +19,6 @@ class ChatService:
     def __init__(self, vector_store_service):
         self.vector_store_service = vector_store_service
         self.chat_histories = {}  # Dictionary to store histories for each chat ID
-        self.llm = Ollama(model=settings.OLLAMA_MODEL)
         
         # Initialiser l'encoder une seule fois
         self.encoder = SentenceTransformer("paraphrase-mpnet-base-v2")
@@ -100,11 +99,30 @@ class ChatService:
         
         return response.strip().upper() == 'YES'
 
-    def generate_response(self, query: str, chat_id: str, history: list = None):
+    def generate_response(self, message: str, history: list = None, model: str = None, chat_id: str = None):
         try:
+            # Initialize LLM with the specified model and host from settings
+            llm = Ollama(
+                model=model or settings.OLLAMA_MODEL,
+                base_url=settings.OLLAMA_HOST
+            )
+            
+            # Get the current date in French timezone
+            current_date = datetime.now(ZoneInfo("Europe/Paris")).strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Add logging to debug model selection
+            print(f"Using model: {model}")
+            
+            # Test the model connection before proceeding
+            try:
+                llm.invoke("test")  # Simple test call
+            except Exception as e:
+                print(f"Model connection error: {str(e)}")
+                raise Exception(f"Failed to connect to model {model}: {str(e)}")
+
             # Initialize or get chat history for this specific chat_id
-            if chat_id not in self.chat_histories:
-                self.chat_histories[chat_id] = []
+            if not chat_id:
+                chat_id = "default"  # Fallback chat_id
             
             # Format the history for this specific chat
             formatted_history = ""
@@ -126,9 +144,9 @@ class ChatService:
             print(formatted_history)
             
             # Check if we need document context
-            needs_context = self.should_use_context(query)
+            needs_context = self.should_use_context(message)
             print(f"\n=== Context Check ===")
-            print(f"Query: {query}")
+            print(f"Query: {message}")
             print(f"Needs context: {needs_context}")
             
             if needs_context:
@@ -142,7 +160,7 @@ class ChatService:
                 
                 # First get documents directly
                 results = vector_store.similarity_search(
-                    query,
+                    message,
                     k=5,
                     filter=None
                 )
@@ -192,7 +210,7 @@ class ChatService:
 
                 # Create document chain
                 document_chain = create_stuff_documents_chain(
-                    llm=self.llm,
+                    llm=llm,
                     prompt=document_prompt
                 )
 
@@ -204,10 +222,10 @@ class ChatService:
 
                 # Get response
                 response = retrieval_chain.invoke({
-                    "input": query,
+                    "input": message,
                     "chat_history": formatted_history,
                     "chat_id": chat_id,
-                    "current_date": datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%d %H:%M:%S UTC")
+                    "current_date": current_date
                 })
                 
                 print(f"\n=== Final Response ===")
@@ -235,21 +253,19 @@ class ChatService:
                     """
                 )
                 
-                answer = self.llm.invoke(direct_prompt.format(
+                answer = llm.invoke(direct_prompt.format(
                     chat_id=chat_id,
-                    current_date=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%d %H:%M:%S UTC"),
+                    current_date=current_date,
                     chat_history=formatted_history,
-                    input=query
+                    input=message
                 ))
 
             # Update chat history
-            self.chat_histories[chat_id].append({"role": "human", "content": query})
+            self.chat_histories[chat_id].append({"role": "human", "content": message})
             self.chat_histories[chat_id].append({"role": "assistant", "content": answer})
 
             return answer
 
         except Exception as e:
-            print(f"\n=== Error ===")
-            print(f"Error generating response: {str(e)}")
-            logger.error(f"Error generating response in chat {chat_id}: {str(e)}")
-            raise
+            print(f"Error in generate_response: {str(e)}")  # Add logging
+            raise Exception(f"Error generating response: {str(e)}")

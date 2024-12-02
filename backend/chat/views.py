@@ -16,6 +16,8 @@ from PyPDF2 import PdfReader
 from sentence_transformers import SentenceTransformer, util
 import torch
 from django.http import StreamingHttpResponse
+import subprocess
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -28,48 +30,29 @@ chat_service = ChatService(vector_store_service)
 @method_decorator(csrf_exempt, name='dispatch')
 class ChatView(APIView):
     def post(self, request):
-        message = request.data.get('message', '')
-        history = request.data.get('history', [])
-        chat_id = request.data.get('chatId', '')
-        
-        # Map the history roles correctly
-        formatted_history = []
-        for msg in history:
-            role = msg.get('role', '')
-            # Map 'ai' role to 'assistant'
-            if role == 'ai':
-                role = 'assistant'
-            formatted_history.append({
-                'role': role,
-                'content': msg.get('content', '')
-            })
-        
-        if not message or not chat_id:
-            return Response(
-                {'error': 'No message or chat ID provided'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         try:
+            message = request.data.get('message', '')
+            history = request.data.get('history', [])
+            chat_id = request.data.get('chatId', '')
+            model = request.data.get('model', settings.OLLAMA_MODEL)
+            
+            # Add logging
+            print(f"Received request - Model: {model}, Message: {message}, Chat ID: {chat_id}")
+            
+            chat_service = ChatService(VectorStoreService())
             response = chat_service.generate_response(
-                message, 
-                chat_id, 
-                formatted_history
+                message=message,
+                history=history,
+                model=model,
+                chat_id=chat_id
             )
             
-            def stream_response():
-                for chunk in response:
-                    yield chunk
-
-            return StreamingHttpResponse(
-                streaming_content=stream_response(),
-                content_type='text/event-stream'
-            )
-
+            return Response(response)
+            
         except Exception as e:
-            logger.error(f"Error in chat: {str(e)}")
+            print(f"Error in ChatView: {str(e)}")  # Add logging
             return Response(
-                {'error': 'An error occurred processing your request'},
+                {'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -167,4 +150,41 @@ class DocumentContentView(APIView):
             return Response(
                 {'error': 'Document not found'},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+class OllamaModelsView(APIView):
+    def get(self, request):
+        try:
+            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+            models = []
+            for line in result.stdout.split('\n')[1:]:  # Skip header line
+                if line.strip():
+                    parts = line.split()
+                    if len(parts) >= 2:  # Ensure we have at least name and size
+                        models.append({
+                            'name': parts[0],
+                            'size': parts[1]
+                        })
+            return Response({'models': models})
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to fetch Ollama models: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class UpdateSettingsView(APIView):
+    def post(self, request):
+        try:
+            model = request.data.get('model')
+            if model:
+                settings.OLLAMA_MODEL = model
+                return Response({'message': f'Model updated to {model}'})
+            return Response(
+                {'error': 'No model provided'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to update settings: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

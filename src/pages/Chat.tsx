@@ -110,35 +110,26 @@ const Chat: React.FC = () => {
 
   const handleMessageSend = async (messages: ChatMessage[]) => {
     try {
-      const lastMessage = messages[messages.length - 1]?.content || '';
-      
-      const history = messages.slice(0, -1).map(msg => ({
-        content: msg.content,
-        role: msg.role === 'assistant' ? 'ai' : 'human'
-      }));
-      
-      const response = await fetch('http://localhost:8000/api/chat/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message: lastMessage,
-          chatId: chatId,
-          history: history,
-          model: currentModel
-        }),
-      });
-
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response;
+        const lastMessage = messages[messages.length - 1]?.content || '';
+        
+        const history = messages.slice(0, -1).map(msg => ({
+            content: msg.content,
+            role: msg.role === 'assistant' ? 'ai' : 'human'
+        }));
+        
+        const response = await sendMessage(lastMessage, chatId || '', currentModel);
+        if (!response) throw new Error('No response from server');
+        return new Response(JSON.stringify(response), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
 
     } catch (error) {
-      console.error('Error sending message:', error);
-      return new Response('An error occurred while processing your message.', {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' },
-      });
+        console.error('Error sending message:', error);
+        return new Response('An error occurred while processing your message.', {
+            status: 500,
+            headers: { 'Content-Type': 'text/plain' },
+        });
     }
   };
 
