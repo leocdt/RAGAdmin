@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-your-secret-key-here'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.149', 'localhost']
+ALLOWED_HOSTS = ['192.168.137.2','192.168.0.149', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -90,3 +90,10 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only, configure properly for pr
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_HOST = "http://192.168.137.2:11434"  # Default Ollama host
+CHROMA_SETTINGS = {
+    "persist_directory": "./chroma_db",
+    "anonymized_telemetry": False
+}

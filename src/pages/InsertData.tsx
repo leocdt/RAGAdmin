@@ -15,7 +15,7 @@ const InsertData: React.FC = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/upload/', formData, {
+      const response = await axios.post('http://192.168.137.2:8000/api/upload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -60,8 +60,7 @@ const InsertData: React.FC = () => {
         </p>
         <p className="ant-upload-text">Click or drag file to this area to upload</p>
         <p className="ant-upload-hint">
-          Support for PDF, Markdown, and TXT files. Strictly prohibit from uploading company data or other
-          sensitive files.
+          Support for PDF, Markdown, and TXT files.
         </p>
       </Dragger>
     </div>
