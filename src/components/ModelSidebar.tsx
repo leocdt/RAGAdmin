@@ -4,14 +4,17 @@ import { Select } from 'antd';
 interface ModelSidebarProps {
   currentModel: string;
   onModelChange: (model: string) => void;
+  models: string[];
 }
 
-const ModelSidebar: React.FC<ModelSidebarProps> = ({ currentModel, onModelChange }) => {
-  const models = [
-    { value: 'llama3.1:8b', label: 'Llama 3.1 (8B)' },
-    { value: 'llama2:7b', label: 'Llama 2 (7B)' },
-    { value: 'mistral:7b', label: 'Mistral (7B)' },
-  ];
+const ModelSidebar: React.FC<ModelSidebarProps> = ({ currentModel, onModelChange, models }) => {
+  const modelOptions = models.length > 0
+    ? models.map(model => ({ value: model, label: model }))
+    : [
+        { value: 'llama3.1:8b', label: 'Llama 3.1 (8B)' },
+        { value: 'llama3.1:13b', label: 'Llama 3.1 (13B)' },
+        { value: 'llama3.1:70b', label: 'Llama 3.1 (70B)' },
+      ];
 
   return (
     <div className="w-64 bg-white border-l h-full p-4">
@@ -24,8 +27,9 @@ const ModelSidebar: React.FC<ModelSidebarProps> = ({ currentModel, onModelChange
           <Select
             value={currentModel}
             onChange={onModelChange}
-            options={models}
+            options={modelOptions}
             className="w-full"
+            loading={models.length === 0}
           />
         </div>
       </div>

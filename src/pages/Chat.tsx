@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
 import ModelSidebar from '../components/ModelSidebar';
-import { Select, App } from 'antd';
+import { App } from 'antd';
 
 interface ChatSession {
   id: string;
@@ -23,8 +23,10 @@ const Chat: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
+  const [currentModel, setCurrentModel] = useState<string>(() => {
+    return localStorage.getItem('selected_model') || 'llama3.1:8b';
+  });
   const [models, setModels] = useState<string[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>('llama2');
   const chatKey = useRef(0);
 
   useEffect(() => {
@@ -49,7 +51,10 @@ const Chat: React.FC = () => {
       const session = chatSessions.find(s => s.id === chatId);
       if (session) {
         setCurrentChat(session.messages);
-        setCurrentModel(session.model || 'llama3.1:8b');
+        if (session.model) {
+          setCurrentModel(session.model);
+          localStorage.setItem('selected_model', session.model);
+        }
       } else {
         setCurrentChat({});
       }
@@ -64,19 +69,30 @@ const Chat: React.FC = () => {
         if (!response.ok) throw new Error('Failed to fetch models');
         const data = await response.json();
         setModels(data.models || []);
-        if (data.models?.length > 0) {
-          setSelectedModel(data.models[0]);
-        }
       } catch (error) {
         console.error('Error fetching models:', error);
-        message.error('Failed to fetch available models. Using default model.');
+        // Fallback models if API fails
+        setModels(['llama3.1:8b', 'llama3.1:13b', 'llama3.1:70b']);
       }
     };
     fetchModels();
-  }, [message]);
+  }, []);
 
-  const handleModelChange = (value: string) => {
-    setSelectedModel(value);
+  const handleModelChange = (model: string) => {
+    setCurrentModel(model);
+    localStorage.setItem('selected_model', model);
+    if (chatId) {
+      setChatSessions(prev => {
+        const updated = prev.map(session =>
+          session.id === chatId
+            ? { ...session, model }
+            : session
+        );
+        localStorage.setItem('chat_sessions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+    message.success(`Switched to ${model} model`);
   };
 
   const handleNewChat = () => {
@@ -93,29 +109,6 @@ const Chat: React.FC = () => {
       return updated;
     });
     navigate(`/chat/${newChatId}`);
-  };
-
-  const handleDeleteChat = (chatIdToDelete: string) => {
-    const remainingChats = chatSessions.filter(session => session.id !== chatIdToDelete);
-    const nextChat = remainingChats.length > 0 ? remainingChats[0] : null;
-  
-    setChatSessions(remainingChats);
-    localStorage.setItem('chat_sessions', JSON.stringify(remainingChats));
-  
-    if (remainingChats.length === 0) {
-      const newChatId = uuidv4();
-      const newSession = { 
-        id: newChatId, 
-        title: 'New Chat', 
-        messages: {},
-        model: currentModel 
-      };
-      setChatSessions([newSession]);
-      localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
-      navigate(`/chat/${newChatId}`);
-    } else if (chatId === chatIdToDelete && nextChat) {
-      navigate(`/chat/${nextChat.id}`);
-    }
   };
 
   const handleMessageSend = async (messages: ChatMessage[]) => {
@@ -136,7 +129,7 @@ const Chat: React.FC = () => {
           message: lastMessage,
           chatId: chatId,
           history: history,
-          model: selectedModel
+          model: currentModel
         }),
       });
 
@@ -182,27 +175,17 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="chat-container">
+    <div className="chat-container" style={{ height: 'calc(100vh - 64px)' }}>
       <ChatSidebar 
         chats={chatSessions}
         onNewChat={handleNewChat}
-        onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
       />
-      <div className="flex-1 flex flex-col">
-        <div className="p-4 border-b flex justify-end">
-          <Select
-            value={selectedModel}
-            onChange={handleModelChange}
-            className="model-selector"
-            options={models.map(model => ({ label: model, value: model }))}
-            placeholder="Select a model"
-          />
-        </div>
+      <div className="flex-1">
         {currentChat !== null && chatId && (
           <ProChat
             key={chatKey.current}
-            style={{ height: 'calc(100% - 64px)' }}
+            style={{ height: '100%' }}
             helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
             request={handleMessageSend}
             initialChats={currentChat}
@@ -217,6 +200,7 @@ const Chat: React.FC = () => {
       <ModelSidebar
         currentModel={currentModel}
         onModelChange={handleModelChange}
+        models={models}
       />
     </div>
   );

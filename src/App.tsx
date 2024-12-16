@@ -1,11 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { App as AntApp, Layout } from 'antd';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Chat from './pages/Chat';
 import InsertData from './pages/InsertData';
 import Documents from './pages/Documents';
-import './scss/main.scss';
 import Header from './components/Header';
+import './scss/main.scss';
 
 const { Content } = Layout;
 
