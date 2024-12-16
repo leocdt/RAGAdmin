@@ -1,42 +1,28 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+
 [data-theme='dark'] {
-  // Couleurs de base pour le thème sombre
-  background-color: map-get(map-get($colors, 'dark'), 'bg-primary');
-  color: map-get(map-get($colors, 'dark'), 'text-primary');
+  background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+  color: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
 
-  // Pour le titre du site
   .site-title {
-    color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
+    color: map.get(map.get(vars.$colors, 'dark'), 'text-primary') !important;
   }
 
-  // Pour le layout principal
   .ant-layout {
-    background-color: map-get(map-get($colors, 'dark'), 'bg-tertiary') !important;
+    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-tertiary') !important;
   }
 
-  // Pour l'en-tête
   .ant-layout-header {
-    background-color: map-get(map-get($colors, 'dark'), 'bg-primary') !important;
-    box-shadow: map-get(map-get($shadows, 'dark'), 'sm') !important;
-    position: relative !important;
-    z-index: map-get($z-layers, 'header') !important;
+    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-primary') !important;
+    box-shadow: map.get(map.get(vars.$shadows, 'dark'), 'sm') !important;
+    z-index: map.get(vars.$z-layers, 'header') !important;
   }
 
-  // Pour le menu de navigation
   .ant-menu {
-    background-color: map-get(map-get($colors, 'dark'), 'bg-primary') !important;
-
-    // Pour les éléments du menu
     &-item {
-      color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
-
-      // Pour l'élément sélectionné
       &-selected::after {
-        border-bottom-color: map-get(map-get($colors, 'dark'), 'accent') !important;
-      }
-
-      // Pour l'effet de survol
-      &:hover::after {
-        border-bottom-color: map-get(map-get($colors, 'dark'), 'accent') !important;
+        border-bottom-color: map.get(map.get(vars.$colors, 'dark'), 'accent') !important;
       }
     }
   }

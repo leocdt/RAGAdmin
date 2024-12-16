@@ -1,12 +1,15 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+
 [data-theme='dark'] {
   // Variables communes pour réutilisation
-  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
-  $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
-  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
-  $border: map-get(map-get($colors, 'dark'), 'border');
-  $accent: map-get(map-get($colors, 'dark'), 'accent');
-  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
-  $error: map-get(map-get($colors, 'dark'), 'error');
+  $bg-primary: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+  $text-primary: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
+  $text-secondary: map.get(map.get(vars.$colors, 'dark'), 'text-secondary');
+  $border: map.get(map.get(vars.$colors, 'dark'), 'border');
+  $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
+  $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
+  $error: map.get(map.get(vars.$colors, 'dark'), 'error');
 
   // Pour la zone de dépôt de fichiers
   .ant-upload-drag {

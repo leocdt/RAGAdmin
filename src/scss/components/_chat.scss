@@ -1,13 +1,18 @@
+@use 'sass:map';
+@use 'sass:color';
+@use '../abstracts/variables' as vars;
+@use '../themes/light' as light;
+
 [data-theme='dark'] {
     // Variables communes pour réutilisation
-    $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
-    $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
-    $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
-    $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
-    $border: map-get(map-get($colors, 'dark'), 'border');
-    $accent: map-get(map-get($colors, 'dark'), 'accent');
-    $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
-    $error: map-get(map-get($colors, 'dark'), 'error');
+    $bg-primary: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+    $bg-secondary: map.get(map.get(vars.$colors, 'dark'), 'bg-secondary');
+    $text-primary: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
+    $text-secondary: map.get(map.get(vars.$colors, 'dark'), 'text-secondary');
+    $border: map.get(map.get(vars.$colors, 'dark'), 'border');
+    $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
+    $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
+    $error: map.get(map.get(vars.$colors, 'dark'), 'error');
   
     // Pour le titre
     h1 {
@@ -16,8 +21,8 @@
   
     // Pour la zone d'écriture des messages
     .ant-pro-chat-input-area {
-      background: darken($bg-primary, 5%) !important;
-      border-radius: map-get($sizes, 'border-radius', 'xl') !important;
+      background: color.scale($bg-primary, $lightness: -5%) !important;
+      border-radius: map.get(vars.$sizes, 'border-radius') !important;
     }
   
     // Pour l'écriture des erreurs
@@ -139,23 +144,12 @@
     // Pour la scrollbar d'édition
     .acss-zrr53u {
       color: $text-primary !important;
-  
-      &::-webkit-scrollbar {
-        width: map-get($sizes, 'scrollbar', 'small') !important;
-      }
-  
-      &::-webkit-scrollbar-track {
-        background: $bg-primary !important;
-      }
-  
-      &::-webkit-scrollbar-thumb {
-        background: $border;
-        border-radius: map-get($sizes, 'border-radius');
-  
-        &:hover {
-          background: #555555;
-        }
-      }
+      @include light.scrollbar-styles(
+        map.get(map.get(vars.$sizes, 'scrollbar'), 'small'),
+        $bg-primary,
+        $border,
+        #555555
+      );
     }
   
     // Pour les boutons dans éditer
@@ -176,21 +170,11 @@
   
     // Pour la scrollbar du chat
     .acss-1v5259w {
-      &::-webkit-scrollbar {
-        width: map-get($sizes, 'scrollbar', 'medium');
-      }
-  
-      &::-webkit-scrollbar-track {
-        background: $bg-primary;
-      }
-  
-      &::-webkit-scrollbar-thumb {
-        background: $border;
-        border-radius: map-get($sizes, 'border-radius');
-  
-        &:hover {
-          background: #555555;
-        }
-      }
+      @include light.scrollbar-styles(
+        map.get(map.get(vars.$sizes, 'scrollbar'), 'medium'),
+        $bg-primary,
+        $border,
+        #555555
+      );
     }
   }
