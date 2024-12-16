@@ -1,0 +1,29 @@
+[data-theme='dark'] {
+    .ant-select {
+      &-selector {
+        background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
+        border-color: map-get(map-get($colors, 'dark'), 'border') !important;
+        color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
+      }
+  
+      &-arrow {
+        color: map-get(map-get($colors, 'dark'), 'text-secondary') !important;
+      }
+  
+      &-dropdown {
+        background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
+        
+        .ant-select-item {
+          color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
+  
+          &-option-selected {
+            background-color: map-get(map-get($colors, 'dark'), 'accent') !important;
+          }
+  
+          &:hover {
+            background-color: map-get(map-get($colors, 'dark'), 'bg-tertiary') !important;
+          }
+        }
+      }
+    }
+  }

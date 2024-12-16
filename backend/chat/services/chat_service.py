@@ -16,10 +16,11 @@ from zoneinfo import ZoneInfo
 logger = logging.getLogger(__name__)
 
 class ChatService:
-    def __init__(self, vector_store_service):
+    def __init__(self, vector_store_service, model_name="llama2"):
         self.vector_store_service = vector_store_service
         self.chat_histories = {}  # Dictionary to store histories for each chat ID
-        self.llm = Ollama(model=settings.OLLAMA_MODEL)
+        self.model_name = model_name
+        self.llm = Ollama(model=self.model_name)
         
         # Initialiser l'encoder une seule fois
         self.encoder = SentenceTransformer("paraphrase-mpnet-base-v2")
@@ -45,7 +46,7 @@ class ChatService:
             You are RAGAdmin, a technical assistant powered by LLama. Here are your session details:
             - Session ID: {chat_id}
             - Current Date: {current_date}
-            - Model: LLama 3.1 8B
+            - Model:
             - Knowledge cutoff: 2023
             
             Instructions:

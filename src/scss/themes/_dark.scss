@@ -1,0 +1,88 @@
+[data-theme='dark'] {
+  // Variables communes pour réutilisation
+  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
+  $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
+  $bg-tertiary: map-get(map-get($colors, 'dark'), 'bg-tertiary');
+  $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
+  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
+  $border: map-get(map-get($colors, 'dark'), 'border');
+  $accent: map-get(map-get($colors, 'dark'), 'accent');
+  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
+  $error: map-get(map-get($colors, 'dark'), 'error');
+
+  @include theme('dark') {
+    // Variables globales
+    background-color: $bg-primary;
+    color: $text-primary;
+
+    // Layout
+    .ant-layout {
+      background-color: $bg-tertiary !important;
+    }
+
+    // Header
+    .ant-layout-header {
+      background-color: $bg-primary !important;
+      box-shadow: map-get(map-get($shadows, 'dark'), 'sm') !important;
+      position: relative !important;
+      z-index: map-get($z-layers, 'header') !important;
+    }
+
+    // Menu
+    .ant-menu {
+      background-color: $bg-primary !important;
+
+      &-item {
+        color: $text-primary !important;
+
+        &-selected {
+          background-color: $border !important;
+        }
+
+        &:hover {
+          background-color: $bg-secondary !important;
+        }
+      }
+    }
+
+    // Typographie
+    h1, h2, h3, h4, h5, h6 {
+      color: $text-primary !important;
+    }
+
+    // Liens
+    a {
+      color: $accent;
+
+      &:hover {
+        color: $accent-hover;
+      }
+    }
+
+    // Bordures
+    .ant-divider {
+      border-color: $border;
+    }
+
+    // Boutons
+    .ant-btn {
+      &-primary:not(:disabled):not(.ant-btn-disabled) {
+        background-color: $accent !important;
+
+        &:hover {
+          background-color: $accent-hover !important;
+        }
+      }
+
+      &-default:hover {
+        color: $accent !important;
+        border-color: $accent !important;
+      }
+    }
+
+    // Titre du site
+    .site-title {
+      color: $text-primary !important;
+    }
+  }
+}

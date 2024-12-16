@@ -4,40 +4,68 @@ import type { ChatMessage } from '@ant-design/pro-chat';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
+import ModelSidebar from '../components/ModelSidebar';
+import { App } from 'antd';
 
 interface ChatSession {
   id: string;
   title: string;
   messages: Record<string, ChatMessage>;
+  model?: string;
 }
 
 const Chat: React.FC = () => {
   const { chatId } = useParams();
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [chatSessions, setChatSessions] = useState<ChatSession[]>(() => {
     const saved = localStorage.getItem('chat_sessions');
-    return saved ? JSON.parse(saved) : [];
+    const savedOrder = localStorage.getItem('chatOrder');
+    if (saved) {
+      const sessions = JSON.parse(saved);
+      if (savedOrder) {
+        const orderIds = JSON.parse(savedOrder);
+        return orderIds
+          .map(id => sessions.find(s => s.id === id))
+          .filter(Boolean);
+      }
+      return sessions;
+    }
+    return [];
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
+  const [currentModel, setCurrentModel] = useState<string>(() => {
+    return localStorage.getItem('selected_model') || 'Failed to fetch models';
+  });
+  const [models, setModels] = useState<string[]>([]);
   const chatKey = useRef(0);
 
   useEffect(() => {
     if (!chatId && chatSessions.length === 0) {
       const newChatId = uuidv4();
-      const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+      const newSession = { 
+        id: newChatId, 
+        title: 'New Chat', 
+        messages: {},
+        model: currentModel 
+      };
       setChatSessions([newSession]);
       localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
       navigate(`/chat/${newChatId}`);
     } else if (!chatId && chatSessions.length > 0) {
       navigate(`/chat/${chatSessions[0].id}`);
     }
-  }, [chatId, chatSessions, navigate]);
+  }, [chatId, chatSessions, navigate, currentModel]);
 
   useEffect(() => {
     if (chatId) {
       const session = chatSessions.find(s => s.id === chatId);
       if (session) {
         setCurrentChat(session.messages);
+        if (session.model) {
+          setCurrentModel(session.model);
+          localStorage.setItem('selected_model', session.model);
+        }
       } else {
         setCurrentChat({});
       }
@@ -45,15 +73,76 @@ const Chat: React.FC = () => {
     }
   }, [chatId, chatSessions]);
 
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/models/`);
+        if (!response.ok) throw new Error('Failed to fetch models');
+        const data = await response.json();
+        setModels(data.models || []);
+      } catch (error) {
+        console.error('Error fetching models:', error);
+        // Fallback models if API fails
+        setModels(['Failed to fetch models']);
+      }
+    };
+    fetchModels();
+  }, []);
+
+  const handleModelChange = (model: string) => {
+    setCurrentModel(model);
+    localStorage.setItem('selected_model', model);
+    if (chatId) {
+      setChatSessions(prev => {
+        const updated = prev.map(session =>
+          session.id === chatId
+            ? { ...session, model }
+            : session
+        );
+        localStorage.setItem('chat_sessions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+    message.success(`Switched to ${model} model`);
+  };
+
   const handleNewChat = () => {
     const newChatId = uuidv4();
-    const newSession = { id: newChatId, title: 'New Chat', messages: {} };
+    const newSession = { 
+      id: newChatId, 
+      title: 'New Chat', 
+      messages: {},
+      model: currentModel 
+    };
     setChatSessions(prev => {
       const updated = [...prev, newSession];
       localStorage.setItem('chat_sessions', JSON.stringify(updated));
       return updated;
     });
     navigate(`/chat/${newChatId}`);
+  };
+
+  const handleDeleteChat = (chatIdToDelete: string) => {
+    setChatSessions(prev => {
+      const updated = prev.filter(chat => chat.id !== chatIdToDelete);
+      localStorage.setItem('chat_sessions', JSON.stringify(updated));
+      return updated;
+    });
+    
+    if (chatId === chatIdToDelete) {
+      const remainingChats = chatSessions.filter(chat => chat.id !== chatIdToDelete);
+      if (remainingChats.length > 0) {
+        navigate(`/chat/${remainingChats[0].id}`);
+      } else {
+        handleNewChat();
+      }
+    }
+  };
+
+  const handleChatsReorder = (newChats: ChatSession[]) => {
+    setChatSessions(newChats);
+    localStorage.setItem('chat_sessions', JSON.stringify(newChats));
+    localStorage.setItem('chatOrder', JSON.stringify(newChats.map(chat => chat.id)));
   };
 
   const handleMessageSend = async (messages: ChatMessage[]) => {
@@ -73,7 +162,8 @@ const Chat: React.FC = () => {
         body: JSON.stringify({ 
           message: lastMessage,
           chatId: chatId,
-          history: history
+          history: history,
+          model: currentModel
         }),
       });
 
@@ -82,6 +172,7 @@ const Chat: React.FC = () => {
 
     } catch (error) {
       console.error('Error sending message:', error);
+      message.error('Failed to send message. Please try again.');
       return new Response('An error occurred while processing your message.', {
         status: 500,
         headers: { 'Content-Type': 'text/plain' },
@@ -94,7 +185,12 @@ const Chat: React.FC = () => {
       setChatSessions(prev => {
         const updated = prev.map(session => 
           session.id === chatId 
-            ? { ...session, messages, title: getFirstUserMessage(messages) || session.title }
+            ? { 
+                ...session, 
+                messages, 
+                title: getFirstUserMessage(messages) || session.title,
+                model: currentModel
+              }
             : session
         );
         localStorage.setItem('chat_sessions', JSON.stringify(updated));
@@ -113,11 +209,13 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-64px)]">
+    <div className="chat-container" style={{ height: 'calc(100vh - 64px)' }}>
       <ChatSidebar 
         chats={chatSessions}
         onNewChat={handleNewChat}
+        onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
+        onChatsReorder={handleChatsReorder}
       />
       <div className="flex-1">
         {currentChat !== null && chatId && (
@@ -135,8 +233,12 @@ const Chat: React.FC = () => {
           />
         )}
       </div>
+      <ModelSidebar
+        currentModel={currentModel}
+        onModelChange={handleModelChange}
+        models={models}
+      />
     </div>
-
   );
 };
 

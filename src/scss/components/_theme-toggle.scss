@@ -1,0 +1,68 @@
+// Variables communes pour réutilisation
+$toggle-size: 16px;
+$toggle-width: 3.50em;
+$toggle-height: 1.50em;
+$toggle-circle-size: 1.0em;
+$toggle-padding: 0.238em;
+$toggle-offset: 0.538em;
+$transition-duration: 0.4s;
+
+// Pour le bouton de changement de thème
+.theme-checkbox {
+  // Taille du toggle
+  --toggle-size: #{$toggle-size};
+  
+  // Reset des styles par défaut
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  // Dimensions du toggle
+  width: $toggle-width;
+  height: $toggle-height;
+  
+  // Arrière-plan avec dégradé pour l'effet de transition
+  background: linear-gradient(
+    to right,
+    map-get(map-get($colors, 'light'), 'bg-secondary') 50%,
+    map-get(map-get($colors, 'dark'), 'bg-secondary') 50%
+  ) no-repeat;
+  background-size: 205%;
+  background-position: 0;
+  
+  // Style et animation
+  transition: $transition-duration;
+  border-radius: 99em;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--toggle-size);
+
+  // Pour le cercle du toggle
+  &::before {
+    content: "";
+    width: $toggle-circle-size;
+    height: $toggle-circle-size;
+    position: absolute;
+    top: $toggle-padding;
+    left: $toggle-offset;
+    background: linear-gradient(
+      to right,
+      map-get(map-get($colors, 'light'), 'bg-secondary') 50%,
+      map-get(map-get($colors, 'dark'), 'bg-secondary') 50%
+    ) no-repeat;
+    background-size: 205%;
+    background-position: 100%;
+    border-radius: 50%;
+    transition: $transition-duration;
+  }
+
+  // État coché (thème sombre)
+  &:checked {
+    background-position: 100%;
+
+    &::before {
+      left: calc(100% - #{$toggle-circle-size} - #{$toggle-offset});
+      background-position: 0;
+    }
+  }
+}

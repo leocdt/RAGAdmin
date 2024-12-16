@@ -1,0 +1,42 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mix;
+
+// Styles de base partagés entre les thèmes
+.ant-layout {
+  @include mix.transition(background-color);
+}
+
+.ant-layout-header {
+  position: relative;
+  z-index: map-get(vars.$z-layers, 'header');
+  @include mix.transition(background-color);
+}
+
+.ant-menu {
+  @include mix.transition(background-color);
+
+  &-item {
+    @include mix.transition(all);
+  }
+}
+
+// Styles de boutons partagés
+.btn {
+  @include mix.transition;
+  border-radius: map-get(vars.$sizes, 'border-radius');
+}
+
+// Styles de texte partagés
+.site-title {
+  @include mix.transition(color);
+}
+
+// Styles d'animation partagés
+.fade {
+  @include mix.transition(opacity);
+}
+
+// Styles de bordure partagés
+.border {
+  @include mix.transition(border-color);
+}
