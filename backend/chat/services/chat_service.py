@@ -46,7 +46,7 @@ class ChatService:
             You are RAGAdmin, a technical assistant powered by LLama. Here are your session details:
             - Session ID: {chat_id}
             - Current Date: {current_date}
-            - Model: LLama 3.1 8B
+            - Model:
             - Knowledge cutoff: 2023
             
             Instructions:

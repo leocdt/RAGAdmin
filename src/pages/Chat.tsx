@@ -72,7 +72,7 @@ const Chat: React.FC = () => {
       } catch (error) {
         console.error('Error fetching models:', error);
         // Fallback models if API fails
-        setModels(['llama3.1:8b', 'llama3.1:13b', 'llama3.1:70b']);
+        setModels(['Failed to fetch models']);
       }
     };
     fetchModels();

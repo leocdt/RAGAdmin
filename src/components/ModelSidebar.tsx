@@ -11,9 +11,7 @@ const ModelSidebar: React.FC<ModelSidebarProps> = ({ currentModel, onModelChange
   const modelOptions = models.length > 0
     ? models.map(model => ({ value: model, label: model }))
     : [
-        { value: 'llama3.1:8b', label: 'Llama 3.1 (8B)' },
-        { value: 'llama3.1:13b', label: 'Llama 3.1 (13B)' },
-        { value: 'llama3.1:70b', label: 'Llama 3.1 (70B)' },
+        { value: 'Failed to load models', label: 'Failed to load models' }
       ];
 
   return (
