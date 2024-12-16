@@ -16,14 +16,14 @@ from PyPDF2 import PdfReader
 from sentence_transformers import SentenceTransformer, util
 import torch
 from django.http import StreamingHttpResponse
+import subprocess
+import json
 
 logger = logging.getLogger(__name__)
 
 # Initialize services
 vector_store_service = VectorStoreService()
 document_service = DocumentService()
-model = SentenceTransformer("all-MiniLM-L6-v2")
-chat_service = ChatService(vector_store_service)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ChatView(APIView):
@@ -31,6 +31,10 @@ class ChatView(APIView):
         message = request.data.get('message', '')
         history = request.data.get('history', [])
         chat_id = request.data.get('chatId', '')
+        model_name = request.data.get('model', 'llama2')  # Default to llama2 if not specified
+        
+        # Create chat service with selected model
+        chat_service = ChatService(vector_store_service, model_name=model_name)
         
         # Map the history roles correctly
         formatted_history = []
@@ -167,4 +171,32 @@ class DocumentContentView(APIView):
             return Response(
                 {'error': 'Document not found'},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ModelListView(APIView):
+    def get(self, request):
+        try:
+            # Run 'ollama list' command
+            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+            
+            if result.returncode != 0:
+                return Response(
+                    {'error': 'Failed to get models list'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            
+            # Parse the output to get model names
+            models = []
+            for line in result.stdout.strip().split('\n')[1:]:  # Skip header line
+                if line:
+                    model_name = line.split()[0]  # First column is model name
+                    models.append(model_name)
+            
+            return Response({'models': models})
+            
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

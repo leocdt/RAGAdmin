@@ -35,7 +35,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, currentChat
           icon: <MessageSquare size={16} />,
           label: <Link to={`/chat/${chat.id}`}>{chat.title}</Link>,
         }))}
-        
       />
     </div>
   );

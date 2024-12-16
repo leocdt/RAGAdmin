@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, message } from 'antd';
+import { Upload, App } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -7,6 +7,7 @@ const { Dragger } = Upload;
 
 const InsertData: React.FC = () => {
   const [fileList, setFileList] = useState<any[]>([]);
+  const { message } = App.useApp();
 
   const handleUpload = async (options: any) => {
     const { file, onSuccess, onError } = options;
@@ -15,7 +16,7 @@ const InsertData: React.FC = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://192.168.137.2:8000/api/upload/', formData, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/upload/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -52,15 +53,15 @@ const InsertData: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Insert Data</h1>
+    <div className="max-w-2xl mx-auto p-8">
+      <h1 className="text-2xl font-bold mb-6">Upload Documents</h1>
       <Dragger {...props}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        <p className="ant-upload-text">Click or drag files to this area to upload</p>
         <p className="ant-upload-hint">
-          Support for PDF, Markdown, and TXT files.
+          Support for PDF, TXT, and MD files. You can upload multiple files at once.
         </p>
       </Dragger>
     </div>
