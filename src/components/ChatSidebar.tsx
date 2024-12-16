@@ -18,8 +18,8 @@ interface ChatSidebarProps {
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, onDeleteChat, currentChatId }) => {
   return (
-    <div className="w-64 bg-white border-r h-full flex flex-col">
-      <div className="p-4 border-b bg-white">
+    <div className="w-64 border-r h-full flex flex-col">
+      <div className="p-4 border-b">
         <button
           onClick={onNewChat}
           className="w-full flex items-center justify-center gap-2 bg-[#1677ff] text-white px-4 py-2 rounded hover:bg-[#0958d9] btn-new-chat"

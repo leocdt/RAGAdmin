@@ -15,7 +15,7 @@ const ModelSidebar: React.FC<ModelSidebarProps> = ({ currentModel, onModelChange
       ];
 
   return (
-    <div className="w-64 bg-white border-l h-full p-4">
+    <div className="w-64 border-l h-full p-4">
       <h3 className="text-lg font-semibold mb-4">Model Settings</h3>
       <div className="space-y-4">
         <div>
