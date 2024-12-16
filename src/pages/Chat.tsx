@@ -20,7 +20,18 @@ const Chat: React.FC = () => {
   const { message } = App.useApp();
   const [chatSessions, setChatSessions] = useState<ChatSession[]>(() => {
     const saved = localStorage.getItem('chat_sessions');
-    return saved ? JSON.parse(saved) : [];
+    const savedOrder = localStorage.getItem('chatOrder');
+    if (saved) {
+      const sessions = JSON.parse(saved);
+      if (savedOrder) {
+        const orderIds = JSON.parse(savedOrder);
+        return orderIds
+          .map(id => sessions.find(s => s.id === id))
+          .filter(Boolean);
+      }
+      return sessions;
+    }
+    return [];
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
   const [currentModel, setCurrentModel] = useState<string>(() => {
@@ -128,6 +139,12 @@ const Chat: React.FC = () => {
     }
   };
 
+  const handleChatsReorder = (newChats: ChatSession[]) => {
+    setChatSessions(newChats);
+    localStorage.setItem('chat_sessions', JSON.stringify(newChats));
+    localStorage.setItem('chatOrder', JSON.stringify(newChats.map(chat => chat.id)));
+  };
+
   const handleMessageSend = async (messages: ChatMessage[]) => {
     try {
       const lastMessage = messages[messages.length - 1]?.content || '';
@@ -198,6 +215,7 @@ const Chat: React.FC = () => {
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
+        onChatsReorder={handleChatsReorder}
       />
       <div className="flex-1">
         {currentChat !== null && chatId && (
