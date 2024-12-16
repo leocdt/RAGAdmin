@@ -1,54 +1,71 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 
-// Pour le toggle du thème
-.theme-toggle {
-  // Variables communes pour réutilisation
-  $bg-secondary-light: map.get(map.get(vars.$colors, 'light'), 'bg-secondary');
-  $bg-secondary-dark: map.get(map.get(vars.$colors, 'dark'), 'bg-secondary');
-  $toggle-size: map.get(vars.$sizes, 'toggle');
+// Variables communes pour réutilisation
+$toggle-size: 16px;
+$toggle-width: 3.50em;
+$toggle-height: 1.50em;
+$toggle-circle-size: 1.0em;
+$toggle-padding: 0.238em;
+$toggle-offset: 0.538em;
+$transition-duration: 0.4s;
 
-  // Styles de base
-  position: relative;
-  width: calc($toggle-size * 2);
-  height: $toggle-size;
-  border-radius: calc($toggle-size / 2);
-  cursor: pointer;
-  transition: map.get(vars.$transitions, 'toggle');
+// Pour le bouton de changement de thème
+.theme-checkbox {
+  // Taille du toggle
+  --toggle-size: #{$toggle-size};
+  
+  // Reset des styles par défaut
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  // Dimensions du toggle
+  width: $toggle-width;
+  height: $toggle-height;
+  
+  // Arrière-plan avec dégradé pour l'effet de transition
   background: linear-gradient(
     to right,
-    $bg-secondary-light 50%,
-    $bg-secondary-dark 50%
-  );
-  background-size: 200% 100%;
+    map.get(map.get(vars.$colors, 'light'), 'bg-secondary') 50%,
+    map.get(map.get(vars.$colors, 'dark'), 'bg-secondary') 50%
+  ) no-repeat;
+  background-size: 205%;
   background-position: 0;
+  
+  // Style et animation
+  transition: $transition-duration;
+  border-radius: 99em;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--toggle-size);
 
   // Pour le cercle du toggle
-  &::after {
-    content: '';
+  &::before {
+    content: "";
+    width: $toggle-circle-size;
+    height: $toggle-circle-size;
     position: absolute;
-    top: 1px;
-    left: 1px;
-    width: calc($toggle-size - 2px);
-    height: calc($toggle-size - 2px);
-    border-radius: 50%;
+    top: $toggle-padding;
+    left: $toggle-offset;
     background: linear-gradient(
       to right,
-      $bg-secondary-light 50%,
-      $bg-secondary-dark 50%
-    );
-    background-size: 200% 100%;
-    background-position: 0;
-    transition: map.get(vars.$transitions, 'toggle');
+      map.get(map.get(vars.$colors, 'light'), 'bg-secondary') 50%,
+      map.get(map.get(vars.$colors, 'dark'), 'bg-secondary') 50%
+    ) no-repeat;
+    background-size: 205%;
+    background-position: 100%;
+    border-radius: 50%;
+    transition: $transition-duration;
   }
 
-  // État actif (thème sombre)
-  &.active {
-    background-position: -100%;
+  // État coché (thème sombre)
+  &:checked {
+    background-position: 100%;
 
-    &::after {
-      transform: translateX($toggle-size);
-      background-position: -100%;
+    &::before {
+      left: calc(100% - #{$toggle-circle-size} - #{$toggle-offset});
+      background-position: 0;
     }
   }
 }

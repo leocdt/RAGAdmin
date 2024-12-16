@@ -11,28 +11,21 @@
   $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
   $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
 
-  // Pour la sidebar du modèle
-  .ant-drawer {
-    &-content,
-    &-wrapper-body {
-      background-color: $bg-secondary !important;
-    }
+  
+  .container-model-sidebar{
+    background-color:$bg-primary;
+    border-left: 1px solid $border;
+  }
 
-    &-header {
-      background-color: $bg-secondary !important;
-      border-bottom: 1px solid $border !important;
-    }
+  .container-list-model>label{
+    color: $accent;
+  }
 
-    &-title {
-      color: $text-primary !important;
-    }
-
-    &-close {
-      color: $text-secondary !important;
-
-      &:hover {
-        color: $text-primary !important;
-      }
-    }
+  :where(.css-dev-only-do-not-override-1hpnbz2).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector{
+    border-color : $border;
+    color: $text-primary;
+  }
+  .ant-select-selector{
+    background-color: #333333;
   }
 }
