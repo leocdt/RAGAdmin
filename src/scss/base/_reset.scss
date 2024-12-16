@@ -1,8 +1,11 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mix;
 
 :root {
-    @include theme('light') {
-      background-color: map-get(map-get($colors, 'light'), 'bg-primary');
-      color: map-get(map-get($colors, 'light'), 'text-primary');
+    @include mix.theme('light') {
+      background-color: map.get(map.get(vars.$colors, 'light'), 'bg-primary');
+      color: map.get(map.get(vars.$colors, 'light'), 'text-primary');
     }
   }
   

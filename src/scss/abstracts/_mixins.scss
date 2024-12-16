@@ -1,45 +1,34 @@
-// Mixin pour les scrollbars
-@mixin scrollbar($width, $track-color, $thumb-color, $thumb-hover-color) {
-    &::-webkit-scrollbar {
-      width: $width;
-    }
-  
-    &::-webkit-scrollbar-track {
-      background: $track-color;
-    }
-  
-    &::-webkit-scrollbar-thumb {
-      background: $thumb-color;
-      border-radius: map-get($sizes, 'border-radius');
-    }
-  
-    &::-webkit-scrollbar-thumb:hover {
-      background: $thumb-hover-color;
-    }
+@use 'sass:map';
+@use 'sass:color';
+@use 'variables' as vars;
+
+// Mixin pour les transitions
+@mixin transition($property: all) {
+  transition: #{$property} map.get(vars.$transitions, 'default');
+}
+
+// Mixin pour les thèmes
+@mixin theme($theme) {
+  $theme-colors: map.get(vars.$colors, $theme);
+  @content;
+}
+
+// Mixin pour les boutons
+@mixin button-variant($bg-color, $hover-color, $text-color) {
+  background-color: $bg-color;
+  color: $text-color;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: $hover-color;
   }
+}
+
+// Mixin pour les hover states
+@mixin hover-effect($property, $value) {
+  @include transition($property);
   
-  // Mixin pour les thèmes
-  @mixin theme($theme) {
-    $theme-colors: map-get($colors, $theme);
-    @content;
+  &:hover {
+    #{$property}: $value;
   }
-  
-  // Mixin pour les boutons
-  @mixin button-variant($bg-color, $hover-color, $text-color) {
-    background-color: $bg-color;
-    color: $text-color;
-    transition: background-color map-get($transitions, 'default');
-  
-    &:hover {
-      background-color: $hover-color;
-    }
-  }
-  
-  // Mixin pour les hover states
-  @mixin hover-effect($property, $value) {
-    transition: #{$property} map-get($transitions, 'default');
-    
-    &:hover {
-      #{$property}: $value;
-    }
-  }
+}
