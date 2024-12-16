@@ -34,4 +34,4 @@ backend/chat/migrations/__pycache__
 backend/chroma_db/*
 !backend/chroma_db/chroma.sqlite3
 backend/venv
-backend\rag_chat\__pycache__
+backend/rag_chat/__pycache__
