@@ -24,7 +24,7 @@ const Chat: React.FC = () => {
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
   const [currentModel, setCurrentModel] = useState<string>(() => {
-    return localStorage.getItem('selected_model') || 'llama3.1:8b';
+    return localStorage.getItem('selected_model') || 'Failed to fetch models';
   });
   const [models, setModels] = useState<string[]>([]);
   const chatKey = useRef(0);
