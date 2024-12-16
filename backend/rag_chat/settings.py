@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-your-secret-key-here'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.149', 'localhost']
+ALLOWED_HOSTS = ['192.168.137.2','192.168.0.149', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -86,13 +86,40 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True  # For development only, configure properly for production
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite dev server
+    "http://localhost:4173",  # Vite preview
+    "http://localhost:3000",  # Optional: React dev server
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-OLLAMA_MODEL = "llama3.1:8b"
-OLLAMA_HOST = "http://localhost:11434"  # Default Ollama host
+OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_HOST = "http://192.168.137.2:11434"  # Default Ollama host
 CHROMA_SETTINGS = {
     "persist_directory": "./chroma_db",
     "anonymized_telemetry": False

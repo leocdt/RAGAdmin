@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
 import ModelSidebar from '../components/ModelSidebar';
+import { Select, App } from 'antd';
 
 interface ChatSession {
   id: string;
@@ -16,12 +17,14 @@ interface ChatSession {
 const Chat: React.FC = () => {
   const { chatId } = useParams();
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [chatSessions, setChatSessions] = useState<ChatSession[]>(() => {
     const saved = localStorage.getItem('chat_sessions');
     return saved ? JSON.parse(saved) : [];
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
-  const [currentModel, setCurrentModel] = useState<string>('llama3.1:8b');
+  const [models, setModels] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('llama2');
   const chatKey = useRef(0);
 
   useEffect(() => {
@@ -54,19 +57,26 @@ const Chat: React.FC = () => {
     }
   }, [chatId, chatSessions]);
 
-  const handleModelChange = (model: string) => {
-    setCurrentModel(model);
-    if (chatId) {
-      setChatSessions(prev => {
-        const updated = prev.map(session =>
-          session.id === chatId
-            ? { ...session, model }
-            : session
-        );
-        localStorage.setItem('chat_sessions', JSON.stringify(updated));
-        return updated;
-      });
-    }
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/models/`);
+        if (!response.ok) throw new Error('Failed to fetch models');
+        const data = await response.json();
+        setModels(data.models || []);
+        if (data.models?.length > 0) {
+          setSelectedModel(data.models[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching models:', error);
+        message.error('Failed to fetch available models. Using default model.');
+      }
+    };
+    fetchModels();
+  }, [message]);
+
+  const handleModelChange = (value: string) => {
+    setSelectedModel(value);
   };
 
   const handleNewChat = () => {
@@ -117,7 +127,7 @@ const Chat: React.FC = () => {
         role: msg.role === 'assistant' ? 'ai' : 'human'
       }));
       
-      const response = await fetch('http://localhost:8000/api/chat/', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chat/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +136,7 @@ const Chat: React.FC = () => {
           message: lastMessage,
           chatId: chatId,
           history: history,
-          model: currentModel
+          model: selectedModel
         }),
       });
 
@@ -135,6 +145,7 @@ const Chat: React.FC = () => {
 
     } catch (error) {
       console.error('Error sending message:', error);
+      message.error('Failed to send message. Please try again.');
       return new Response('An error occurred while processing your message.', {
         status: 500,
         headers: { 'Content-Type': 'text/plain' },
@@ -171,18 +182,27 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-64px)]">
+    <div className="chat-container">
       <ChatSidebar 
         chats={chatSessions}
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
       />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
+        <div className="p-4 border-b flex justify-end">
+          <Select
+            value={selectedModel}
+            onChange={handleModelChange}
+            className="model-selector"
+            options={models.map(model => ({ label: model, value: model }))}
+            placeholder="Select a model"
+          />
+        </div>
         {currentChat !== null && chatId && (
           <ProChat
             key={chatKey.current}
-            style={{ height: '100%' }}
+            style={{ height: 'calc(100% - 64px)' }}
             helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
             request={handleMessageSend}
             initialChats={currentChat}
