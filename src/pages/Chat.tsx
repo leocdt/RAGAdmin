@@ -6,7 +6,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
 import ModelSidebar from '../components/ModelSidebar';
 import { App } from 'antd';
-import frFR from '../locales/fr-FR';
 import '../styles/chat.css';
 
 interface ChatSession {
@@ -147,6 +146,18 @@ const Chat: React.FC = () => {
     localStorage.setItem('chatOrder', JSON.stringify(newChats.map(chat => chat.id)));
   };
 
+  const handleRenameChat = (chatId: string, newTitle: string) => {
+    setChatSessions(prev => {
+      const updated = prev.map(session =>
+        session.id === chatId
+          ? { ...session, title: newTitle }
+          : session
+      );
+      localStorage.setItem('chat_sessions', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const handleMessageSend = async (messages: ChatMessage[]) => {
     try {
       const lastMessage = messages[messages.length - 1]?.content || '';
@@ -218,6 +229,7 @@ const Chat: React.FC = () => {
         onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
         onChatsReorder={handleChatsReorder}
+        onRenameChat={handleRenameChat}
       />
       <div className="flex-1">
         {currentChat !== null && chatId && (
@@ -228,29 +240,6 @@ const Chat: React.FC = () => {
             request={handleMessageSend}
             initialChats={currentChat}
             onChatsChange={handleChatsChange}
-            inputAreaProps={{
-              placeholder: 'Enter your message...',
-            }}
-            chatBoxProps={{
-              actions: [
-                {
-                  key: 'edit',
-                  name: 'Modifier',
-                },
-                {
-                  key: 'copy',
-                  name: 'Copier',
-                },
-                {
-                  key: 'regenerate',
-                  name: 'Régénérer',
-                },
-                {
-                  key: 'delete',
-                  name: 'Supprimer',
-                }
-              ]
-            }}
             locale="en-US"
           />
         )}

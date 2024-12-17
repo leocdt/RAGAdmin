@@ -1,5 +1,5 @@
-import React from 'react';
-import { Menu, Popconfirm } from 'antd';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Popconfirm, Input } from 'antd';
 import { MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -15,64 +15,130 @@ interface ChatSidebarProps {
   onDeleteChat: (chatId: string) => void;
   currentChatId?: string;
   onChatsReorder?: (newChats: ChatSession[]) => void;
+  onRenameChat?: (chatId: string, newTitle: string) => void;
 }
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, onDeleteChat, currentChatId, onChatsReorder }) => {
-  const [draggedItem, setDraggedItem] = React.useState<number | null>(null);
+const ChatSidebar: React.FC<ChatSidebarProps> = ({ 
+  chats, 
+  onNewChat, 
+  onDeleteChat, 
+  currentChatId, 
+  onChatsReorder,
+  onRenameChat 
+}) => {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [editingChatId, setEditingChatId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    setDraggedItem(index);
-    e.dataTransfer.effectAllowed = 'move';
-    e.currentTarget.classList.add('dragging');
-  };
+  const handleDragStart = useCallback((index: number) => {
+    setDraggedIndex(index);
+  }, []);
 
-  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
-    setDraggedItem(null);
-    e.currentTarget.classList.remove('dragging');
-    // Remove drag-over class from all items
-    document.querySelectorAll('.drag-over').forEach(el => {
-      el.classList.remove('drag-over');
-    });
-  };
+  const handleDrop = useCallback((dropIndex: number) => {
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    const newChats = [...chats];
+    const [draggedChat] = newChats.splice(draggedIndex, 1);
+    newChats.splice(dropIndex, 0, draggedChat);
+    onChatsReorder?.(newChats);
+    setDraggedIndex(null);
+  }, [chats, draggedIndex, onChatsReorder]);
+
+  const handleDoubleClick = useCallback((chatId: string, currentTitle: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (draggedItem === null) return;
+    setEditingChatId(chatId);
+    setEditingTitle(currentTitle);
+  }, []);
 
-    const draggedOverItem = chats[index];
-    if (!draggedOverItem) return;
-
-    // Remove drag-over class from all items first
-    document.querySelectorAll('.drag-over').forEach(el => {
-      el.classList.remove('drag-over');
-    });
-    // Add drag-over class to current target
-    e.currentTarget.classList.add('drag-over');
-
-    if (draggedItem !== index) {
-      const items = [...chats];
-      const draggedItemContent = items[draggedItem];
-      items.splice(draggedItem, 1);
-      items.splice(index, 0, draggedItemContent);
-
-      if (onChatsReorder) {
-        onChatsReorder(items);
-      }
-      setDraggedItem(index);
+  const handleRenameSubmit = useCallback(() => {
+    if (editingChatId && onRenameChat && editingTitle.trim()) {
+      onRenameChat(editingChatId, editingTitle.trim());
     }
-  };
+    setEditingChatId(null);
+  }, [editingChatId, editingTitle, onRenameChat]);
 
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
+  const handleRenameCancel = useCallback(() => {
+    setEditingChatId(null);
+  }, []);
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    // Only remove the class if we're leaving the actual target, not its children
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      e.currentTarget.classList.remove('drag-over');
-    }
-  };
+  const renderChatItem = useCallback((chat: ChatSession, index: number) => {
+    const isEditing = editingChatId === chat.id;
+    const isDragging = draggedIndex === index;
+
+    return (
+      <div
+        key={chat.id}
+        className={`chat-item flex items-center p-2 ${isDragging ? 'opacity-50' : ''}`}
+        draggable
+        onDragStart={() => handleDragStart(index)}
+        onDragOver={(e) => {
+          e.preventDefault();
+          const target = e.currentTarget;
+          const boundingRect = target.getBoundingClientRect();
+          const mouseY = e.clientY;
+          const threshold = boundingRect.top + boundingRect.height / 2;
+          
+          target.classList.remove('drag-over-top', 'drag-over-bottom');
+          if (mouseY < threshold) {
+            target.classList.add('drag-over-top');
+          } else {
+            target.classList.add('drag-over-bottom');
+          }
+        }}
+        onDragLeave={(e) => {
+          e.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+          handleDrop(index);
+        }}
+        onDoubleClick={(e) => handleDoubleClick(chat.id, chat.title, e)}
+      >
+        <MessageSquare size={16} className="mr-2" />
+        {isEditing ? (
+          <Input
+            value={editingTitle}
+            onChange={(e) => setEditingTitle(e.target.value)}
+            onPressEnter={handleRenameSubmit}
+            onBlur={handleRenameCancel}
+            autoFocus
+            size="small"
+            className="flex-1 mr-2"
+            onClick={(e) => e.stopPropagation()}
+            draggable={false}
+          />
+        ) : (
+          <>
+            <Link 
+              to={`/chat/${chat.id}`} 
+              className="flex-1 truncate"
+              onClick={(e) => e.stopPropagation()}
+              draggable={false}
+            >
+              {chat.title}
+            </Link>
+            <Popconfirm
+              title="Delete chat"
+              description="Are you sure you want to delete this chat?"
+              onConfirm={() => onDeleteChat(chat.id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="opacity-0 group-hover:opacity-100 hover:text-red-500 ml-2"
+                draggable={false}
+              >
+                <Trash2 size={16} />
+              </button>
+            </Popconfirm>
+          </>
+        )}
+      </div>
+    );
+  }, [editingChatId, editingTitle, draggedIndex, handleDoubleClick, handleDrop, handleRenameSubmit, handleRenameCancel, onDeleteChat]);
 
   return (
     <div className="w-64 border-r h-full flex flex-col">
@@ -86,78 +152,26 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, onDeleteCha
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <Menu
-          mode="inline"
-          selectedKeys={currentChatId ? [currentChatId] : []}
-          items={chats.map((chat, index) => ({
-            key: chat.id,
-            icon: <MessageSquare size={16} />,
-            label: (
-              <div
-                draggable
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragEnd={handleDragEnd}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
-                className="flex items-center justify-between w-full pr-2 cursor-move group"
-                style={{ touchAction: 'none' }}
-              >
-                <Link 
-                  to={`/chat/${chat.id}`} 
-                  className="flex-1 truncate"
-                  onClick={(e) => e.stopPropagation()}
-                  draggable={false}
-                >
-                  {chat.title}
-                </Link>
-                {chats.length > 1 && (
-                  <Popconfirm
-                    title="Delete chat"
-                    description="Are you sure you want to delete this chat?"
-                    onConfirm={(e) => {
-                      if (e) e.stopPropagation();
-                      onDeleteChat(chat.id);
-                    }}
-                    onCancel={(e) => {
-                      if (e) e.stopPropagation();
-                    }}
-                    okText="Yes"
-                    cancelText="No"
-                  >
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity z-50"
-                      draggable={false}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </Popconfirm>
-                )}
-              </div>
-            ),
-            className: `group relative ${draggedItem === index ? 'dragging' : ''}`,
-          }))}
-        />
+        {chats.map((chat, index) => renderChatItem(chat, index))}
       </div>
       <style>
         {`
-          .dragging {
-            opacity: 0.5;
+          .chat-item {
+            cursor: move;
+            background: white;
+            transition: background-color 0.2s;
+          }
+          .chat-item:hover {
             background: #f5f5f5;
           }
-          .drag-over {
+          .chat-item.drag-over-top {
             border-top: 2px solid #1677ff;
           }
-          [draggable] {
-            user-select: none;
-            -webkit-user-drag: element;
+          .chat-item.drag-over-bottom {
+            border-bottom: 2px solid #1677ff;
           }
-          .ant-menu-item:hover {
-            cursor: move;
+          .chat-item.opacity-50 {
+            opacity: 0.5;
           }
         `}
       </style>
@@ -165,4 +179,4 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, onDeleteCha
   );
 };
 
-export default ChatSidebar;
+export default React.memo(ChatSidebar);
