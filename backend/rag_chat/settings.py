@@ -118,7 +118,7 @@ CORS_ALLOW_HEADERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_MODEL = "llama3.1:8b"
 OLLAMA_HOST = "http://192.168.137.2:11434"  # Default Ollama host
 CHROMA_SETTINGS = {
     "persist_directory": "./chroma_db",

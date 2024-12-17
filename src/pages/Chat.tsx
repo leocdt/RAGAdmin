@@ -199,7 +199,7 @@ const Chat: React.FC = () => {
         onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
       />
-      <div className="flex-1">
+      <div className="flex-1 relative">
         {currentChat !== null && chatId && (
           <ProChat
             key={chatKey.current}
@@ -214,12 +214,14 @@ const Chat: React.FC = () => {
             locale="en-US"
           />
         )}
+        <div className="absolute top-0 right-0 z-10">
+          <ModelSidebar
+            currentModel={currentModel}
+            onModelChange={handleModelChange}
+            models={models}
+          />
+        </div>
       </div>
-      <ModelSidebar
-        currentModel={currentModel}
-        onModelChange={handleModelChange}
-        models={models}
-      />
     </div>
   );
 };
