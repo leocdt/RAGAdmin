@@ -1,18 +1,31 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+
 [data-theme='dark'] {
+  // Variables communes pour réutilisation
+  $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
+  $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
+  $bg-primary: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+  $bg-secondary: map.get(map.get(vars.$colors, 'dark'), 'bg-secondary');
+  $text-primary: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
+  $text-secondary: map.get(map.get(vars.$colors, 'dark'), 'text-secondary');
+  $border: map.get(map.get(vars.$colors, 'dark'), 'border');
+  $error: map.get(map.get(vars.$colors, 'dark'), 'error');
+
   // Pour le tableau
   .ant-table {
-    color: map-get(map-get($colors, 'dark'), 'text-primary');
-    background-color: map-get(map-get($colors, 'dark'), 'bg-primary') !important;
+    color: $text-primary;
+    background-color: $bg-primary !important;
 
     // Pour le header du tableau
     &-thead > tr > th {
-      color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
-      background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
-      border-bottom: 1px solid map-get(map-get($colors, 'dark'), 'border') !important;
+      color: $text-primary !important;
+      background-color: $bg-secondary !important;
+      border-bottom: 1px solid $border !important;
 
       // Pour les séparateurs de colonne sur le header du tableau
       &::before {
-        background-color: map-get(map-get($colors, 'dark'), 'border') !important;
+        background-color: $border !important;
       }
     }
 
@@ -20,24 +33,16 @@
     &-tbody > tr {
       &:hover > td,
       .ant-table-cell-row-hover {
-        background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
-        transition: background-color map-get($transitions, 'default');
+        background-color: $bg-secondary !important;
+        transition: background-color map.get(vars.$transitions, 'default');
       }
     }
 
     // Pour les cellules du tableau
     &-cell {
-      border-bottom: 1px solid map-get(map-get($colors, 'dark'), 'border') !important;
+      border-bottom: 1px solid $border !important;
     }
   }
-
-  // Variables communes pour réutilisation
-  $accent: map-get(map-get($colors, 'dark'), 'accent');
-  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
-  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
-  $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
-  $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
-  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
 
   // Pour la pagination
   .ant-pagination {
@@ -127,13 +132,13 @@
 
   // Pour le bouton de fermeture d'une visualisation
   .ant-modal-close:hover .ant-modal-close-icon {
-    color: map-get(map-get($colors, 'dark'), 'error') !important;
+    color: $error !important;
   }
 
   // Pour les barres de défilement
   [class*="max-h-[60vh]"] {
     &::-webkit-scrollbar {
-      width: map-get($sizes, 'scrollbar', 'medium');
+      width: map.get(map.get(vars.$sizes, 'scrollbar'), 'medium');
     }
 
     &::-webkit-scrollbar-track {
@@ -141,8 +146,8 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: map-get(map-get($colors, 'dark'), 'border');
-      border-radius: map-get($sizes, 'border-radius');
+      background: $border;
+      border-radius: map.get(vars.$sizes, 'border-radius');
 
       &:hover {
         background: #555555;

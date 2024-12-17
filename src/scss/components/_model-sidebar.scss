@@ -1,29 +1,31 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+
 [data-theme='dark'] {
-    .ant-select {
-      &-selector {
-        background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
-        border-color: map-get(map-get($colors, 'dark'), 'border') !important;
-        color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
-      }
+  // Variables communes pour réutilisation
+  $bg-primary: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+  $bg-secondary: map.get(map.get(vars.$colors, 'dark'), 'bg-secondary');
+  $text-primary: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
+  $text-secondary: map.get(map.get(vars.$colors, 'dark'), 'text-secondary');
+  $border: map.get(map.get(vars.$colors, 'dark'), 'border');
+  $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
+  $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
+
   
-      &-arrow {
-        color: map-get(map-get($colors, 'dark'), 'text-secondary') !important;
-      }
-  
-      &-dropdown {
-        background-color: map-get(map-get($colors, 'dark'), 'bg-secondary') !important;
-        
-        .ant-select-item {
-          color: map-get(map-get($colors, 'dark'), 'text-primary') !important;
-  
-          &-option-selected {
-            background-color: map-get(map-get($colors, 'dark'), 'accent') !important;
-          }
-  
-          &:hover {
-            background-color: map-get(map-get($colors, 'dark'), 'bg-tertiary') !important;
-          }
-        }
-      }
-    }
+  .container-model-sidebar{
+    background-color:$bg-primary;
+    border-left: 1px solid $border;
   }
+
+  .container-list-model>label{
+    color: $accent;
+  }
+
+  :where(.css-dev-only-do-not-override-1hpnbz2).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector{
+    border-color : $border;
+    color: $text-primary;
+  }
+  .ant-select-selector{
+    background-color: #333333;
+  }
+}

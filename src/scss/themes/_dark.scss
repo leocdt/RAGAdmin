@@ -1,16 +1,20 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mix;
+
 [data-theme='dark'] {
   // Variables communes pour réutilisation
-  $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
-  $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
-  $bg-tertiary: map-get(map-get($colors, 'dark'), 'bg-tertiary');
-  $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
-  $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
-  $border: map-get(map-get($colors, 'dark'), 'border');
-  $accent: map-get(map-get($colors, 'dark'), 'accent');
-  $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
-  $error: map-get(map-get($colors, 'dark'), 'error');
+  $bg-primary: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+  $bg-secondary: map.get(map.get(vars.$colors, 'dark'), 'bg-secondary');
+  $bg-tertiary: map.get(map.get(vars.$colors, 'dark'), 'bg-tertiary');
+  $text-primary: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
+  $text-secondary: map.get(map.get(vars.$colors, 'dark'), 'text-secondary');
+  $border: map.get(map.get(vars.$colors, 'dark'), 'border');
+  $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
+  $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
+  $error: map.get(map.get(vars.$colors, 'dark'), 'error');
 
-  @include theme('dark') {
+  @include mix.theme('dark') {
     // Variables globales
     background-color: $bg-primary;
     color: $text-primary;
@@ -23,9 +27,9 @@
     // Header
     .ant-layout-header {
       background-color: $bg-primary !important;
-      box-shadow: map-get(map-get($shadows, 'dark'), 'sm') !important;
+      box-shadow: map.get(map.get(vars.$shadows, 'dark'), 'sm') !important;
       position: relative !important;
-      z-index: map-get($z-layers, 'header') !important;
+      z-index: map.get(vars.$z-layers, 'header') !important;
     }
 
     // Menu
@@ -83,6 +87,64 @@
     // Titre du site
     .site-title {
       color: $text-primary !important;
+    }
+
+    // Chat Interface
+    .chat-sidebar {
+      background-color: $bg-primary !important;
+      border-color: $border !important;
+
+      .p-4.border-b {
+        background-color: $bg-primary !important;
+        border-color: $border !important;
+      }
+
+      .flex-1 {
+        background-color: $bg-primary !important;
+        border-color: $border !important;
+      }
+    }
+
+    // Override des bordures blanches
+    .border-r, .border-l {
+      border-color: $border !important;
+    }
+
+    // Model Sidebar
+    .ant-select {
+      background-color: $bg-secondary !important;
+
+      &-selector {
+        background-color: $bg-secondary !important;
+        border-color: $border !important;
+        color: $text-primary !important;
+      }
+
+      &-selection-item {
+        color: $text-primary !important;
+      }
+
+      &-dropdown {
+        background-color: $bg-secondary !important;
+        
+        .ant-select-item {
+          color: $text-primary !important;
+          
+          &-option-selected,
+          &-option-active {
+            background-color: $bg-tertiary !important;
+          }
+        }
+      }
+    }
+
+    .btn-new-chat {
+      background-color: $accent !important;
+      color: $text-primary !important;
+      
+      &:hover {
+        background-color: $accent-hover !important;
+      }
     }
   }
 }

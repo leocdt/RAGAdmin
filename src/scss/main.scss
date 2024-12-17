@@ -1,19 +1,4 @@
-// Abstracts
-@import 'abstracts/variables';
-@import 'abstracts/mixins';
-
-// Base
-@import 'base/reset';
-
-// Components
-@import 'components/theme-toggle';
-@import 'components/insert-data';
-@import 'components/chat';
-@import 'components/documents';
-@import 'components/sidebar';
-@import 'components/header';
-@import 'components/model-sidebar';
-
-// Themes
-@import 'themes/light';
-@import 'themes/dark';
+@use 'base';
+@use 'abstracts';
+@use 'themes';
+@use 'components';

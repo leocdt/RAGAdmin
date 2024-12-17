@@ -1,3 +1,6 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+
 // Variables communes pour réutilisation
 $toggle-size: 16px;
 $toggle-width: 3.50em;
@@ -24,8 +27,8 @@ $transition-duration: 0.4s;
   // Arrière-plan avec dégradé pour l'effet de transition
   background: linear-gradient(
     to right,
-    map-get(map-get($colors, 'light'), 'bg-secondary') 50%,
-    map-get(map-get($colors, 'dark'), 'bg-secondary') 50%
+    map.get(map.get(vars.$colors, 'light'), 'bg-secondary') 50%,
+    map.get(map.get(vars.$colors, 'dark'), 'bg-secondary') 50%
   ) no-repeat;
   background-size: 205%;
   background-position: 0;
@@ -47,8 +50,8 @@ $transition-duration: 0.4s;
     left: $toggle-offset;
     background: linear-gradient(
       to right,
-      map-get(map-get($colors, 'light'), 'bg-secondary') 50%,
-      map-get(map-get($colors, 'dark'), 'bg-secondary') 50%
+      map.get(map.get(vars.$colors, 'light'), 'bg-secondary') 50%,
+      map.get(map.get(vars.$colors, 'dark'), 'bg-secondary') 50%
     ) no-repeat;
     background-size: 205%;
     background-position: 100%;
