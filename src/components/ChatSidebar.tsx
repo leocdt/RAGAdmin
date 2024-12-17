@@ -157,9 +157,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       <style>
         {`
           .chat-item {
-            cursor: move;
+            cursor: pointer;
             background: white;
             transition: background-color 0.2s;
+            user-select: none;
           }
           .chat-item:hover {
             background: #f5f5f5;
@@ -172,6 +173,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           }
           .chat-item.opacity-50 {
             opacity: 0.5;
+          }
+          [draggable] {
+            cursor: pointer !important;
+          }
+          [draggable] * {
+            cursor: pointer !important;
           }
         `}
       </style>
