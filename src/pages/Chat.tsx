@@ -6,6 +6,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
 import ModelSidebar from '../components/ModelSidebar';
 import { App } from 'antd';
+import frFR from '../locales/fr-FR';
+import '../styles/chat.css';
 
 interface ChatSession {
   id: string;
@@ -228,6 +230,26 @@ const Chat: React.FC = () => {
             onChatsChange={handleChatsChange}
             inputAreaProps={{
               placeholder: 'Enter your message...',
+            }}
+            chatBoxProps={{
+              actions: [
+                {
+                  key: 'edit',
+                  name: 'Modifier',
+                },
+                {
+                  key: 'copy',
+                  name: 'Copier',
+                },
+                {
+                  key: 'regenerate',
+                  name: 'Régénérer',
+                },
+                {
+                  key: 'delete',
+                  name: 'Supprimer',
+                }
+              ]
             }}
             locale="en-US"
           />

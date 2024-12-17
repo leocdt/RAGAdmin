@@ -1,0 +1,53 @@
+.ant-dropdown-menu-item:nth-child(1) .ant-dropdown-menu-title-content {
+  visibility: hidden;
+  position: relative;
+}
+
+.ant-dropdown-menu-item:nth-child(1) .ant-dropdown-menu-title-content::after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "Modifier";
+}
+
+.ant-dropdown-menu-item:nth-child(2) .ant-dropdown-menu-title-content {
+  visibility: hidden;
+  position: relative;
+}
+
+.ant-dropdown-menu-item:nth-child(2) .ant-dropdown-menu-title-content::after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "Copier";
+}
+
+.ant-dropdown-menu-item:nth-child(3) .ant-dropdown-menu-title-content {
+  visibility: hidden;
+  position: relative;
+}
+
+.ant-dropdown-menu-item:nth-child(3) .ant-dropdown-menu-title-content::after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "Régénérer";
+}
+
+.ant-dropdown-menu-item:nth-child(5) .ant-dropdown-menu-title-content {
+  visibility: hidden;
+  position: relative;
+}
+
+.ant-dropdown-menu-item:nth-child(5) .ant-dropdown-menu-title-content::after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "Supprimer";
+}
+
+
