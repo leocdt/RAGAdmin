@@ -344,6 +344,9 @@ body {
 [data-theme=dark] .zcss-1hxup8p > p {
   color: #ffffff !important;
 }
+[data-theme=dark] .zcss-1hxup8p {
+  color: #ffffff !important;
+}
 [data-theme=dark] .acss-1kwsnuy {
   color: #ff9933 !important;
 }
