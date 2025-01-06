@@ -155,6 +155,14 @@ body {
   bottom: 7% !important;
 }
 
+.deleteButtonChat > .lucide.lucide-trash2 {
+  opacity: 0 !important;
+}
+
+.chat-item:hover .deleteButtonChat > .lucide.lucide-trash2 {
+  opacity: 1 !important;
+}
+
 [data-theme=dark] {
   background-color: #1f1f1f;
   color: #ffffff;
@@ -543,28 +551,30 @@ body {
   border-right: 1px solid #1f1f1f !important;
 }
 [data-theme=dark] .container-sidebar::-webkit-scrollbar {
-  width: 4px;
+  width: 4px !important;
 }
 [data-theme=dark] .container-sidebar::-webkit-scrollbar-track {
-  background: #1f1f1f;
+  background: #1f1f1f !important;
 }
 [data-theme=dark] .container-sidebar::-webkit-scrollbar-thumb {
-  background: #444444;
+  background: #444444 !important;
+  border-radius: !important;
 }
 [data-theme=dark] .container-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #555555;
+  background: #555555 !important;
 }
 [data-theme=dark] .flex-1.overflow-y-auto::-webkit-scrollbar {
-  width: 4px;
+  width: 4px !important;
 }
 [data-theme=dark] .flex-1.overflow-y-auto::-webkit-scrollbar-track {
-  background: #1f1f1f;
+  background: #1f1f1f !important;
 }
 [data-theme=dark] .flex-1.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #444444;
+  background: #444444 !important;
+  border-radius: !important;
 }
 [data-theme=dark] .flex-1.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #555555;
+  background: #555555 !important;
 }
 [data-theme=dark] .container-sidebar-chat {
   background-color: #1f1f1f !important;
@@ -596,10 +606,10 @@ body {
   color: #888888 !important;
 }
 [data-theme=dark] .group button {
-  color: #888888;
+  color: #888888 !important;
 }
 [data-theme=dark] .group button:hover {
-  color: #949494;
+  color: #949494 !important;
 }
 [data-theme=dark] .group:hover .hover\:text-red-500:hover {
   color: #ff4d4f !important;
@@ -615,6 +625,22 @@ body {
 }
 [data-theme=dark] .ant-popconfirm-description {
   color: #ff9933 !important;
+}
+[data-theme=dark] .chat-item {
+  background-color: #1f1f1f !important;
+  color: #888888 !important;
+}
+[data-theme=dark] .chat-item > a {
+  color: #888888 !important;
+}
+[data-theme=dark] .chat-item:hover {
+  background-color: #2a2a2a !important;
+}
+[data-theme=dark] .deleteButtonChat > .lucide.lucide-trash2 {
+  opacity: 0 !important;
+}
+[data-theme=dark] .chat-item:hover .deleteButtonChat > .lucide.lucide-trash2 {
+  opacity: 1 !important;
 }
 
 [data-theme=dark] {

@@ -128,7 +128,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             >
               <button
                 onClick={(e) => e.stopPropagation()}
-                className="opacity-0 group-hover:opacity-100 hover:text-red-500 ml-2"
+                className="deleteButtonChat"
                 draggable={false}
               >
                 <Trash2 size={16} />

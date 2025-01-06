@@ -19,19 +19,19 @@
 
     // Pour la scrollbar de la sidebar
     &::-webkit-scrollbar {
-      width: map.get(map.get(vars.$sizes, 'scrollbar'), 'small');
+      width: map.get(map.get(vars.$sizes, 'scrollbar'), 'small') !important;
     }
 
     &::-webkit-scrollbar-track {
-      background: $bg-primary;
+      background: $bg-primary !important;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $border;
-      border-radius: map.get(vars.$sizes, 'border-radius');
+      background: $border !important;
+      border-radius: map.get(vars.$sizes, 'border-radius') !important;
 
       &:hover {
-        background: #555555;
+        background: #555555 !important;
       }
     }
   }
@@ -41,19 +41,19 @@
 
     // Pour la scrollbar de la sidebar
     &::-webkit-scrollbar {
-      width: map.get(map.get(vars.$sizes, 'scrollbar'), 'small');
+      width: map.get(map.get(vars.$sizes, 'scrollbar'), 'small') !important;
     }
 
     &::-webkit-scrollbar-track {
-      background: $bg-primary;
+      background: $bg-primary !important;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $border;
-      border-radius: map.get(vars.$sizes, 'border-radius');
+      background: $border !important;
+      border-radius: map.get(vars.$sizes, 'border-radius') !important;
 
       &:hover {
-        background: #555555;
+        background: #555555 !important;
       }
     }
   }
@@ -106,10 +106,10 @@
   // Pour la suppression d'un chat
   .group {
     button {
-      color: $text-secondary;
+      color: $text-secondary !important;
 
       &:hover {
-        color: color.scale($text-secondary, $lightness: 10%);
+        color: color.scale($text-secondary, $lightness: 10%) !important;
       }
     }
 
@@ -136,4 +136,28 @@
   .ant-popconfirm-description{
     color: $accent !important;
   }
+
+  //Ajout du drag and drop
+  .chat-item{
+    background-color: #1f1f1f !important;
+    color: #888888 !important;
+  }
+
+  .chat-item > a{
+    color: #888888 !important;
+  }
+
+  .chat-item:hover{
+    background-color: #2a2a2a !important;
+  }
+
+  .deleteButtonChat > .lucide.lucide-trash2{
+    opacity: 0 !important;
+  }
+
+  .chat-item:hover .deleteButtonChat > .lucide.lucide-trash2{
+    opacity: 1 !important;
+  }
+
+
 }

@@ -167,3 +167,10 @@ body {
   bottom: 7% !important;
 }
 
+.deleteButtonChat > .lucide.lucide-trash2{
+  opacity: 0 !important;
+}
+
+.chat-item:hover .deleteButtonChat > .lucide.lucide-trash2{
+  opacity: 1 !important;
+}
