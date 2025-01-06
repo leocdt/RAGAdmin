@@ -16,6 +16,8 @@ $colors: (
     'bg-primary': #1f1f1f,
     'bg-secondary': #2a2a2a,
     'bg-tertiary': #141414,
+    'bg-quatuary': #252525,
+    'bg-5': #181818,
     'text-primary': #ffffff,
     'text-secondary': #888888,
     'border': #444444,
@@ -35,7 +37,8 @@ $sizes: (
     'small': 4px
   ),
   'toggle': 16px,
-  'border-radius': 4px,
+  'border-radius1': 4px,
+  'border-radius2':16px,
   'spacing': (
     'xs': 4px,
     'sm': 8px,

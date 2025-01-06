@@ -12,20 +12,43 @@
   $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
 
   
-  .container-model-sidebar{
-    background-color:$bg-primary;
-    border-left: 1px solid $border;
+  .container-model-sidebar {
+    background-color: $bg-primary  !important;
+    border: 1px solid $border  !important;
+    border-radius: 8px  !important;
+    padding: 12px  !important;
+    margin: 12px  !important;
+    width: 200px  !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15)  !important;
   }
 
+  .container-model-sidebar-title{
+    color: $text-primary !important;
+  }
   .container-list-model>label{
-    color: $accent;
-  }
-
-  :where(.css-dev-only-do-not-override-1hpnbz2).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector{
-    border-color : $border;
     color: $text-primary;
   }
+
+  //Pour la liste déroulante
+  :where(.css-dev-only-do-not-override-1hpnbz2).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector{
+    border-color : $border !important;
+    color: $text-primary !important;
+    border-radius: map.get(vars.$sizes, 'border-radius1') !important;
+  }
+  :where(.css-dev-only-do-not-override-1hpnbz2).ant-select{
+    border-radius: map.get(vars.$sizes, 'border-radius1') !important;
+  }
+  :where(.css-dev-only-do-not-override-1hpnbz2).ant-select > .ant-select-arrow > .anticon{
+    color: $text-secondary !important;
+  }
+
+  //Hover de la liste déroulante
+  .container-list-model> .ant-select-focused{
+    border: 1px solid #888888 !important;
+  }
+
+  //Pour les élements de la liste déroulante
   .ant-select-selector{
-    background-color: #333333;
+    background-color: #333333 !important;
   }
 }

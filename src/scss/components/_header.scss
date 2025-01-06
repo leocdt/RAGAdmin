@@ -10,16 +10,17 @@
   }
 
   .ant-layout {
-    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-tertiary') !important;
+    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-quatuary') !important;
   }
 
   .ant-layout-header {
-    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-primary') !important;
+    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-5') !important;
     box-shadow: map.get(map.get(vars.$shadows, 'dark'), 'sm') !important;
     z-index: map.get(vars.$z-layers, 'header') !important;
   }
 
   .ant-menu {
+    background-color: map.get(map.get(vars.$colors, 'dark'), 'bg-5') !important;
     &-item {
       color: map.get(map.get(vars.$colors, 'dark'), 'text-primary') !important;
       &-selected::after {
