@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
-import { MessageSquare, Upload, FileText } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Layout, Menu, Button } from 'antd';
+import { MessageSquare, Upload, FileText, Users, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import RAGAdminLogo from '../resources/Image/RAGAdmin3.png';
 import ThemeToggle from './ThemeToggle';
 
@@ -9,11 +10,21 @@ const { Header: AntHeader } = Layout;
 
 const Header: React.FC = () => {
   const location = useLocation();
+  const { isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
   const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const menuItems = [
     { key: '/chat', icon: <MessageSquare size={16} />, label: 'Chat' },
-    { key: '/insert-data', icon: <Upload size={16} />, label: 'Import Data' },
+    ...(isAdmin ? [
+      { key: '/insert-data', icon: <Upload size={16} />, label: 'Import Data' },
+      { key: '/admin', icon: <Users size={16} />, label: 'User Management' },
+    ] : []),
     { key: '/documents', icon: <FileText size={16} />, label: 'Documents' },
   ];
 
@@ -27,15 +38,24 @@ const Header: React.FC = () => {
             RAGAdmin
           </span>
         </Link>
-        <Menu
-          mode="horizontal"
-          selectedKeys={[location.pathname]}
-          items={menuItems.map((item) => ({
-            ...item,
-            label: <Link to={item.key}>{item.label}</Link>,
-          }))}
-          className="border-0 flex-nowrap space-x-2 justify-end"
-        />
+        <div className="flex items-center justify-end">
+          <Menu
+            mode="horizontal"
+            selectedKeys={[location.pathname]}
+            items={menuItems.map((item) => ({
+              ...item,
+              label: <Link to={item.key}>{item.label}</Link>,
+            }))}
+            className="border-0 flex-nowrap space-x-2 mr-4"
+          />
+          <Button
+            icon={<LogOut size={16} />}
+            onClick={handleLogout}
+            className="ml-4"
+          >
+            Logout
+          </Button>
+        </div>
       </div>
     </AntHeader>
   );

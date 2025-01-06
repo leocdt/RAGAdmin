@@ -18,6 +18,14 @@ import torch
 from django.http import StreamingHttpResponse
 import subprocess
 import json
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .permissions import IsAdmin
+from .serializers import UserSerializer
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 
 logger = logging.getLogger(__name__)
 
@@ -200,3 +208,52 @@ class ModelListView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(username=username, password=password)
+    
+    if user:
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'username': user.username,
+            'role': user.role
+        })
+    return Response({'error': 'Invalid credentials'}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def user_list(request):
+    """Liste tous les utilisateurs (accessible uniquement aux admins)"""
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def create_user(request):
+    """Crée un nouvel utilisateur (accessible uniquement aux admins)"""
+    data = request.data.copy()
+    # Hash le mot de passe avant de le sauvegarder
+    data['password'] = make_password(data['password'])
+    serializer = UserSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdmin])
+def delete_user(request, user_id):
+    """Supprime un utilisateur (accessible uniquement aux admins)"""
+    try:
+        user = User.objects.get(id=user_id)
+        user.delete()
+        return Response(status=204)
+    except User.DoesNotExist:
+        return Response(status=404)
