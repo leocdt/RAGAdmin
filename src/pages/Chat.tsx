@@ -19,211 +19,141 @@ const Chat: React.FC = () => {
   const { chatId } = useParams();
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>(() => {
-    const saved = localStorage.getItem('chat_sessions');
-    const savedOrder = localStorage.getItem('chatOrder');
-    if (saved) {
-      const sessions = JSON.parse(saved);
-      if (savedOrder) {
-        const orderIds = JSON.parse(savedOrder);
-        return orderIds
-          .map(id => sessions.find(s => s.id === id))
-          .filter(Boolean);
-      }
-      return sessions;
-    }
-    return [];
-  });
-  const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
-  const [currentModel, setCurrentModel] = useState<string>(() => {
-    return localStorage.getItem('selected_model') || 'Failed to fetch models';
-  });
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [currentModel, setCurrentModel] = useState('llama2');
   const [models, setModels] = useState<string[]>([]);
-  const chatKey = useRef(0);
+  const chatKey = useRef(Date.now());
 
   useEffect(() => {
-    if (!chatId && chatSessions.length === 0) {
-      const newChatId = uuidv4();
-      const newSession = { 
-        id: newChatId, 
-        title: 'New Chat', 
-        messages: {},
-        model: currentModel 
-      };
-      setChatSessions([newSession]);
-      localStorage.setItem('chat_sessions', JSON.stringify([newSession]));
-      navigate(`/chat/${newChatId}`);
-    } else if (!chatId && chatSessions.length > 0) {
-      navigate(`/chat/${chatSessions[0].id}`);
-    }
-  }, [chatId, chatSessions, navigate, currentModel]);
-
-  useEffect(() => {
-    if (chatId) {
-      const session = chatSessions.find(s => s.id === chatId);
-      if (session) {
-        setCurrentChat(session.messages);
-        if (session.model) {
-          setCurrentModel(session.model);
-          localStorage.setItem('selected_model', session.model);
-        }
-      } else {
-        setCurrentChat({});
-      }
-      chatKey.current += 1;
-    }
-  }, [chatId, chatSessions]);
-
-  useEffect(() => {
+    // Charger les modèles disponibles
     const fetchModels = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/models/`);
-        if (!response.ok) throw new Error('Failed to fetch models');
+        const response = await fetch(`${import.meta.env.VITE_LLM_URL}/api/tags`);
         const data = await response.json();
         setModels(data.models || []);
       } catch (error) {
         console.error('Error fetching models:', error);
-        // Fallback models if API fails
-        setModels(['Failed to fetch models']);
+        setModels([]);
       }
     };
+
     fetchModels();
+
+    // Charger les sessions de chat sauvegardées
+    const saved = localStorage.getItem('chat_sessions');
+    if (saved) {
+      setChatSessions(JSON.parse(saved));
+    }
   }, []);
 
-  const handleModelChange = (model: string) => {
-    setCurrentModel(model);
-    localStorage.setItem('selected_model', model);
-    if (chatId) {
-      setChatSessions(prev => {
-        const updated = prev.map(session =>
-          session.id === chatId
-            ? { ...session, model }
-            : session
-        );
-        localStorage.setItem('chat_sessions', JSON.stringify(updated));
-        return updated;
-      });
+  useEffect(() => {
+    if (!chatId && chatSessions.length > 0) {
+      navigate(`/chat/${chatSessions[0].id}`);
     }
-    message.success(`Switched to ${model} model`);
-  };
+  }, [chatId, chatSessions, navigate]);
 
   const handleNewChat = () => {
-    const newChatId = uuidv4();
-    const newSession = { 
-      id: newChatId, 
-      title: 'New Chat', 
+    const newChat: ChatSession = {
+      id: uuidv4(),
+      title: 'New Chat',
       messages: {},
-      model: currentModel 
+      model: currentModel
     };
+
     setChatSessions(prev => {
-      const updated = [...prev, newSession];
+      const updated = [newChat, ...prev];
       localStorage.setItem('chat_sessions', JSON.stringify(updated));
       return updated;
     });
-    navigate(`/chat/${newChatId}`);
+
+    navigate(`/chat/${newChat.id}`);
   };
 
-  const handleDeleteChat = (chatIdToDelete: string) => {
+  const handleDeleteChat = (id: string) => {
     setChatSessions(prev => {
-      const updated = prev.filter(chat => chat.id !== chatIdToDelete);
+      const updated = prev.filter(chat => chat.id !== id);
       localStorage.setItem('chat_sessions', JSON.stringify(updated));
       return updated;
     });
-    
-    if (chatId === chatIdToDelete) {
-      const remainingChats = chatSessions.filter(chat => chat.id !== chatIdToDelete);
-      if (remainingChats.length > 0) {
-        navigate(`/chat/${remainingChats[0].id}`);
-      } else {
-        handleNewChat();
-      }
+
+    if (chatId === id) {
+      navigate('/chat');
     }
   };
 
   const handleChatsReorder = (newChats: ChatSession[]) => {
     setChatSessions(newChats);
     localStorage.setItem('chat_sessions', JSON.stringify(newChats));
-    localStorage.setItem('chatOrder', JSON.stringify(newChats.map(chat => chat.id)));
   };
 
   const handleRenameChat = (chatId: string, newTitle: string) => {
     setChatSessions(prev => {
-      const updated = prev.map(session =>
-        session.id === chatId
-          ? { ...session, title: newTitle }
-          : session
+      const updated = prev.map(chat => 
+        chat.id === chatId ? { ...chat, title: newTitle } : chat
       );
       localStorage.setItem('chat_sessions', JSON.stringify(updated));
       return updated;
     });
   };
 
-  const handleMessageSend = async (messages: ChatMessage[]) => {
-    try {
-      const lastMessage = messages[messages.length - 1]?.content || '';
-      
-      const history = messages.slice(0, -1).map(msg => ({
-        content: msg.content,
-        role: msg.role === 'assistant' ? 'ai' : 'human'
-      }));
-      
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chat/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message: lastMessage,
-          chatId: chatId,
-          history: history,
-          model: currentModel
-        }),
-      });
-
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response;
-
-    } catch (error) {
-      console.error('Error sending message:', error);
-      message.error('Failed to send message. Please try again.');
-      return new Response('An error occurred while processing your message.', {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' },
-      });
-    }
-  };
-
-  const handleChatsChange = (messages: Record<string, ChatMessage>) => {
+  const handleModelChange = (model: string) => {
+    setCurrentModel(model);
     if (chatId) {
       setChatSessions(prev => {
-        const updated = prev.map(session => 
-          session.id === chatId 
-            ? { 
-                ...session, 
-                messages, 
-                title: getFirstUserMessage(messages) || session.title,
-                model: currentModel
-              }
-            : session
+        const updated = prev.map(chat => 
+          chat.id === chatId ? { ...chat, model } : chat
         );
         localStorage.setItem('chat_sessions', JSON.stringify(updated));
         return updated;
       });
-      setCurrentChat(messages);
     }
   };
 
-  const getFirstUserMessage = (messages: Record<string, ChatMessage>): string => {
-    const firstMessage = Object.values(messages).find(msg => msg.role === 'user');
-    if (firstMessage?.content) {
-      return firstMessage.content.slice(0, 30) + (firstMessage.content.length > 30 ? '...' : '');
+  const handleMessageSend = async (messages: ChatMessage[]) => {
+    try {
+      const userMessage = messages[messages.length - 1].content;
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/chat/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          chat_id: chatId,
+          model: currentModel
+        }),
+      });
+
+      if (!response.ok) throw new Error('Chat request failed');
+      
+      const data = await response.json();
+      return data.response;
+    } catch (error) {
+      message.error('Failed to send message');
+      return 'Sorry, there was an error processing your message.';
     }
-    return 'New Chat';
+  };
+
+  const currentChat = chatId 
+    ? chatSessions.find(chat => chat.id === chatId)?.messages
+    : null;
+
+  const handleChatsChange = (newMessages: Record<string, ChatMessage>) => {
+    if (chatId) {
+      setChatSessions(prev => {
+        const updated = prev.map(chat => 
+          chat.id === chatId ? { ...chat, messages: newMessages } : chat
+        );
+        localStorage.setItem('chat_sessions', JSON.stringify(updated));
+        return updated;
+      });
+    }
   };
 
   return (
-    <div className="chat-container" style={{ height: 'calc(100vh - 64px)' }}>
-      <ChatSidebar 
+    <div className="flex h-[calc(100vh-64px)]">
+      <ChatSidebar
         chats={chatSessions}
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
@@ -232,7 +162,7 @@ const Chat: React.FC = () => {
         onRenameChat={handleRenameChat}
       />
       <div className="flex-1">
-        {currentChat !== null && chatId && (
+        {currentChat !== null && chatId ? (
           <ProChat
             key={chatKey.current}
             style={{ height: '100%' }}
@@ -242,6 +172,15 @@ const Chat: React.FC = () => {
             onChatsChange={handleChatsChange}
             locale="en-US"
           />
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <button
+              onClick={handleNewChat}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Start a new chat
+            </button>
+          </div>
         )}
       </div>
       <ModelSidebar

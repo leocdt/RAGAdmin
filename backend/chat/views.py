@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt    
 import logging
 from .models import Document
 from .serializers import DocumentSerializer
@@ -26,6 +26,7 @@ from .permissions import IsAdmin
 from .serializers import UserSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -257,3 +258,35 @@ def delete_user(request, user_id):
         return Response(status=204)
     except User.DoesNotExist:
         return Response(status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def chat(request):
+    """
+    Point de terminaison pour gérer les requêtes de chat
+    """
+    try:
+        message = request.data.get('message')
+        chat_id = request.data.get('chat_id')
+        model = request.data.get('model', settings.DEFAULT_LLM_MODEL)
+        
+        if not message:
+            return Response({'error': 'Message is required'}, status=400)
+            
+        chat_service = ChatService()
+        response = chat_service.generate_response(
+            query=message,
+            chat_id=chat_id,
+            model=model
+        )
+        
+        return Response({
+            'response': response,
+            'chat_id': chat_id
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in chat endpoint: {str(e)}")
+        return Response({
+            'error': 'An error occurred while processing your request'
+        }, status=500)

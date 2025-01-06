@@ -148,3 +148,6 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
+
+# Configuration LLM
+DEFAULT_LLM_MODEL = 'llama2'  # le modèle par défaut qu'on  souhaite utiliser

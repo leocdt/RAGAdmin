@@ -10,16 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/pro-chat": "^1.12.0",
+    "@ant-design/pro-chat": "^1.0.0",
     "@types/uuid": "^10.0.0",
-    "antd": "^5.4.0",
+    "antd": "^5.0.0",
     "axios": "^1.3.5",
     "lucide-react": "^0.129.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.10.0",
+    "react-router-dom": "^6.0.0",
     "tailwindcss-scrollbar": "^0.1.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
