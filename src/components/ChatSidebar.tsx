@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Popconfirm, Input } from 'antd';
-import { MessageSquare, Plus, Trash2 } from 'lucide-react';
+import { Popconfirm, Input, message } from 'antd';
+import { MessageSquare, Plus, Trash2, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { App } from 'antd';
 
 interface ChatSession {
   id: string;
@@ -26,6 +27,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onChatsReorder,
   onRenameChat 
 }) => {
+  const { message } = App.useApp();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
@@ -61,6 +63,55 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const handleRenameCancel = useCallback(() => {
     setEditingChatId(null);
   }, []);
+
+  const handleShare = async (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const chatToShare = chats.find(chat => chat.id === chatId);
+      if (!chatToShare) {
+        throw new Error('Chat not found');
+      }
+
+      const formattedHistory = Object.values(chatToShare.messages).map(msg => ({
+        content: msg.content,
+        role: msg.role === 'ai' ? 'assistant' : 'human',
+        timestamp: msg.meta?.timestamp || new Date().toISOString(),
+        used_documents: msg.meta?.used_documents || [],
+        meta: {
+          avatar: msg.role === 'ai' ? '🤖' : '👤',
+          type: msg.role === 'ai' ? 'answer' : 'question',
+          source: msg.role === 'ai' ? 'bot' : 'human',
+          timestamp: msg.meta?.timestamp || new Date().toISOString(),
+          used_documents: msg.meta?.used_documents || []
+        }
+      }));
+
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/share-chat/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chatId,
+          history: formattedHistory,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to share chat');
+      }
+
+      const data = await response.json();
+      const shareUrl = `${window.location.origin}/shared-chat/${data.chatId}`;
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(shareUrl);
+      message.success('Share link copied to clipboard!');
+    } catch (error) {
+      console.error('Error sharing chat:', error);
+      message.error('Failed to share chat');
+    }
+  };
 
   const renderChatItem = useCallback((chat: ChatSession, index: number) => {
     const isEditing = editingChatId === chat.id;
@@ -119,6 +170,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             >
               {chat.title}
             </Link>
+            <button
+              onClick={(e) => handleShare(chat.id, e)}
+              className="shareButtonChat mr-2"
+              draggable={false}
+            >
+              <Share2 size={16} />
+            </button>
             <Popconfirm
               title="Delete chat"
               description="Are you sure you want to delete this chat?"
@@ -138,7 +196,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         )}
       </div>
     );
-  }, [editingChatId, editingTitle, draggedIndex, handleDoubleClick, handleDrop, handleRenameSubmit, handleRenameCancel, onDeleteChat]);
+  }, [editingChatId, editingTitle, draggedIndex, handleDoubleClick, handleDrop, handleRenameSubmit, handleRenameCancel, onDeleteChat, handleShare]);
 
   return (
     <div className="w-64 border-r h-full flex flex-col container-sidebar-chat">
@@ -173,6 +231,22 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           }
           .chat-item.opacity-50 {
             opacity: 0.5;
+          }
+          .shareButtonChat,
+          .deleteButtonChat {
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: #666;
+            padding: 4px;
+            border-radius: 4px;
+          }
+          .shareButtonChat:hover,
+          .deleteButtonChat:hover {
+            background: #e6e6e6;
+          }
+          .chat-item:hover .shareButtonChat,
+          .chat-item:hover .deleteButtonChat {
+            opacity: 1;
           }
           [draggable] {
             cursor: pointer !important;

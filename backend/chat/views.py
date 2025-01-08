@@ -4,7 +4,7 @@ from rest_framework import status
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import logging
-from .models import Document
+from .models import Document, SharedChat
 from .serializers import DocumentSerializer
 from .services.document_service import DocumentService
 from .services.vector_store_service import VectorStoreService
@@ -171,6 +171,56 @@ class DocumentContentView(APIView):
             return Response(
                 {'error': 'Document not found'},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ChatShareView(APIView):
+    def post(self, request):
+        """Share a chat by saving its history"""
+        chat_id = request.data.get('chatId')
+        history = request.data.get('history', [])
+        
+        if not chat_id or not history:
+            return Response(
+                {'error': 'Chat ID and history are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        try:
+            shared_chat = SharedChat.objects.create(
+                chat_id=chat_id,
+                history=history
+            )
+            return Response({
+                'shareUrl': f'/shared-chat/{chat_id}',
+                'chatId': chat_id
+            })
+        except Exception as e:
+            logger.error(f"Error sharing chat: {str(e)}")
+            return Response(
+                {'error': 'Failed to share chat'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
+    def get(self, request, chat_id):
+        """Retrieve a shared chat by its ID"""
+        try:
+            shared_chat = SharedChat.objects.get(chat_id=chat_id)
+            return Response({
+                'chatId': shared_chat.chat_id,
+                'history': shared_chat.history,
+                'createdAt': shared_chat.created_at
+            })
+        except SharedChat.DoesNotExist:
+            return Response(
+                {'error': 'Shared chat not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error retrieving shared chat: {str(e)}")
+            return Response(
+                {'error': 'Failed to retrieve shared chat'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 @method_decorator(csrf_exempt, name='dispatch')
