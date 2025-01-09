@@ -22,7 +22,8 @@ const Login: React.FC = () => {
       if (!response.ok) throw new Error('Login failed');
 
       const data = await response.json();
-      login(data.token, data.role);
+      console.log('Login response:', data);
+      login(data.token, data.role, data.username);
       navigate('/chat');
     } catch (error) {
       message.error('Login failed');

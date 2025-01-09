@@ -211,21 +211,22 @@ class ModelListView(APIView):
             )
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
+    
     user = authenticate(username=username, password=password)
     
-    if user:
+    if user is not None:
         token, _ = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
-            'user_id': user.pk,
+            'role': user.role,
             'username': user.username,
-            'role': user.role
+            'is_admin': user.role == 'admin'
         })
-    return Response({'error': 'Invalid credentials'}, status=400)
+    else:
+        return Response({'error': 'Invalid credentials'}, status=400)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdmin])

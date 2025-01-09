@@ -2,14 +2,15 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    USER_ROLES = (
-        ('admin', 'Admin'),
+    ROLES = (
         ('user', 'User'),
+        ('admin', 'Admin'),
     )
-    role = models.CharField(max_length=10, choices=USER_ROLES, default='user')
-
-    def is_admin(self):
-        return self.role == 'admin'
+    
+    role = models.CharField(max_length=10, choices=ROLES, default='user')
+    
+    class Meta:
+        db_table = 'auth_user'
 
 class Document(models.Model):
     name = models.CharField(max_length=255)

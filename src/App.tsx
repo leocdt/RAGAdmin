@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Chat from './pages/Chat';
 import AdminDashboard from './pages/AdminDashboard';
 import Unauthorized from './pages/Unauthorized';
+import Documents from './pages/Documents';
 import './App.css';
 
 const { Content } = Layout;
@@ -29,6 +30,7 @@ function App() {
                       <Routes>
                         <Route path="/chat" element={<Chat />} />
                         <Route path="/chat/:chatId" element={<Chat />} />
+                        <Route path="/documents" element={<Documents />} />
                         <Route 
                           path="/admin" 
                           element={

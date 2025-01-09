@@ -1,61 +1,88 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Menu, Button } from 'antd';
-import { MessageSquare, Upload, FileText, Users, LogOut } from 'lucide-react';
+import { Layout, Menu, Button, Switch, theme, Image } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import RAGAdminLogo from '../resources/Image/RAGAdmin3.png';
-import ThemeToggle from './ThemeToggle';
+import { BulbOutlined } from '@ant-design/icons';
 
 const { Header: AntHeader } = Layout;
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin, logout } = useAuth();
-  const navigate = useNavigate();
-  const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+
+  console.log('Header isAdmin:', isAdmin);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const getSelectedKey = () => {
+    const path = location.pathname;
+    if (path.startsWith('/chat')) return 'chat';
+    if (path.startsWith('/documents')) return 'documents';
+    if (path.startsWith('/admin')) return 'admin';
+    return '';
+  };
+
+  const toggleTheme = () => {
+    const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+  };
+
   const menuItems = [
-    { key: '/chat', icon: <MessageSquare size={16} />, label: 'Chat' },
-    ...(isAdmin ? [
-      { key: '/insert-data', icon: <Upload size={16} />, label: 'Import Data' },
-      { key: '/admin', icon: <Users size={16} />, label: 'User Management' },
-    ] : []),
-    { key: '/documents', icon: <FileText size={16} />, label: 'Documents' },
+    { key: 'chat', label: 'Chat', path: '/chat' },
   ];
 
+  if (isAdmin) {
+    console.log('Adding admin menu items');
+    menuItems.push(
+      { key: 'documents', label: 'Import Data', path: '/documents' },
+      { key: 'admin', label: 'User Management', path: '/admin' }
+    );
+  } else {
+    menuItems.push({ key: 'documents', label: 'Documents', path: '/documents' });
+  }
+
   return (
-    <AntHeader className={`shadow-md ${isDarkTheme ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
-      <div className="grid grid-cols-3 items-center max-w-10xl mx-auto">
-        <ThemeToggle className="ml-[-40px]"/>
-        <Link to="/" className="flex items-center justify-center ml-[-200px]">
-          <img src={RAGAdminLogo} alt="RAGAdmin Logo" className="h-14 mr-2" />
-          <span className="text-xl font-bold site-title">
-            RAGAdmin
-          </span>
-        </Link>
-        <div className="flex items-center justify-end">
-          <Menu
-            mode="horizontal"
-            selectedKeys={[location.pathname]}
-            items={menuItems.map((item) => ({
-              ...item,
-              label: <Link to={item.key}>{item.label}</Link>,
-            }))}
-            className="border-0 flex-nowrap space-x-2 mr-4"
-          />
-          <Button
-            icon={<LogOut size={16} />}
-            onClick={handleLogout}
-            className="ml-4"
-          >
-            Logout
-          </Button>
-        </div>
+    <AntHeader style={{ 
+      background: colorBgContainer, 
+      padding: '0 16px', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'space-between',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Image
+          src="/logo.png"
+          alt="RAGAdmin Logo"
+          style={{ height: '40px', marginRight: '24px' }}
+          preview={false}
+        />
+        <Menu
+          mode="horizontal"
+          selectedKeys={[getSelectedKey()]}
+          items={menuItems.map(item => ({
+            key: item.key,
+            label: item.label,
+            onClick: () => navigate(item.path),
+          }))}
+          style={{ flex: 1, minWidth: 'auto' }}
+        />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <Switch
+          checkedChildren={<BulbOutlined />}
+          unCheckedChildren={<BulbOutlined />}
+          onChange={toggleTheme}
+          defaultChecked={document.body.getAttribute('data-theme') === 'dark'}
+        />
+        <Button onClick={handleLogout}>Logout</Button>
       </div>
     </AntHeader>
   );
