@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
 import ModelSidebar from '../components/ModelSidebar';
 import { App } from 'antd';
+import '../styles/chat.css';
 
 interface ChatSession {
   id: string;
@@ -58,20 +59,74 @@ const Chat: React.FC = () => {
   }, [chatId, chatSessions, navigate, currentModel]);
 
   useEffect(() => {
-    if (chatId) {
-      const session = chatSessions.find(s => s.id === chatId);
-      if (session) {
-        setCurrentChat(session.messages);
-        if (session.model) {
-          setCurrentModel(session.model);
-          localStorage.setItem('selected_model', session.model);
+    // Load shared chat if we're on a shared chat route
+    const loadSharedChat = async (id: string) => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/shared-chat/${id}/`);
+        if (!response.ok) {
+          throw new Error('Failed to load shared chat');
         }
-      } else {
-        setCurrentChat({});
+        const data = await response.json();
+        
+        // Convert the shared chat history to the expected format
+        const messages: Record<string, ChatMessage> = {};
+        data.history.forEach((msg: any, index: number) => {
+          messages[`${index}`] = {
+            content: msg.content,
+            role: msg.role === 'assistant' ? 'ai' : 'human',
+            id: `${index}`,
+            timestamp: msg.timestamp || msg.meta?.timestamp,
+            used_documents: msg.used_documents || msg.meta?.used_documents || [],
+            meta: {
+              avatar: msg.role === 'assistant' ? '🤖' : '👤',
+              type: msg.role === 'assistant' ? 'answer' : 'question',
+              source: msg.role === 'assistant' ? 'bot' : 'human',
+              timestamp: msg.timestamp || msg.meta?.timestamp,
+              used_documents: msg.used_documents || msg.meta?.used_documents || []
+            }
+          };
+        });
+
+        // Create a new chat session with the shared chat data
+        const newSession: ChatSession = {
+          id: data.chatId,
+          title: 'Shared Chat',
+          messages,
+          model: currentModel,
+        };
+
+        // Add the shared chat to sessions if it doesn't exist
+        if (!chatSessions.some(chat => chat.id === data.chatId)) {
+          setChatSessions(prev => [...prev, newSession]);
+        }
+        setCurrentChat(messages);
+        chatKey.current += 1; // Force ProChat to re-render
+      } catch (error) {
+        console.error('Error loading shared chat:', error);
+        message.error('Failed to load shared chat');
       }
-      chatKey.current += 1;
+    };
+
+    if (chatId) {
+      const existingChat = chatSessions.find(chat => chat.id === chatId);
+      if (existingChat) {
+        setCurrentChat(existingChat.messages);
+        if (existingChat.model) {
+          setCurrentModel(existingChat.model);
+          localStorage.setItem('selected_model', existingChat.model);
+        }
+        chatKey.current += 1; // Force ProChat to re-render
+      } else if (window.location.pathname.includes('/shared-chat/')) {
+        loadSharedChat(chatId);
+        chatKey.current += 1; // Force ProChat to re-render
+      } else {
+        // Handle invalid chat ID
+        navigate('/');
+      }
+    } else {
+      setCurrentChat(null);
     }
-  }, [chatId, chatSessions]);
+  }, [chatId, chatSessions, navigate, message, currentModel]);
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -145,6 +200,18 @@ const Chat: React.FC = () => {
     localStorage.setItem('chatOrder', JSON.stringify(newChats.map(chat => chat.id)));
   };
 
+  const handleRenameChat = (chatId: string, newTitle: string) => {
+    setChatSessions(prev => {
+      const updated = prev.map(session =>
+        session.id === chatId
+          ? { ...session, title: newTitle }
+          : session
+      );
+      localStorage.setItem('chat_sessions', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const handleMessageSend = async (messages: ChatMessage[]) => {
     try {
       const lastMessage = messages[messages.length - 1]?.content || '';
@@ -216,8 +283,9 @@ const Chat: React.FC = () => {
         onDeleteChat={handleDeleteChat}
         currentChatId={chatId}
         onChatsReorder={handleChatsReorder}
+        onRenameChat={handleRenameChat}
       />
-      <div className="flex-1">
+      <div className="flex-1 relative">
         {currentChat !== null && chatId && (
           <ProChat
             key={chatKey.current}
@@ -226,18 +294,17 @@ const Chat: React.FC = () => {
             request={handleMessageSend}
             initialChats={currentChat}
             onChatsChange={handleChatsChange}
-            inputAreaProps={{
-              placeholder: 'Enter your message...',
-            }}
             locale="en-US"
           />
         )}
+        <div className="absolute top-0 right-0 z-10">
+          <ModelSidebar
+            currentModel={currentModel}
+            onModelChange={handleModelChange}
+            models={models}
+          />
+        </div>
       </div>
-      <ModelSidebar
-        currentModel={currentModel}
-        onModelChange={handleModelChange}
-        models={models}
-      />
     </div>
   );
 };

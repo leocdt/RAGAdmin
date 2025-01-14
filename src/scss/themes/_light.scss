@@ -1,12 +1,15 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+
 // Variables communes pour réutilisation
-$bg-primary: map-get(map-get($colors, 'light'), 'bg-primary');
-$bg-secondary: map-get(map-get($colors, 'light'), 'bg-secondary');
-$bg-tertiary: map-get(map-get($colors, 'light'), 'bg-tertiary');
-$text-primary: map-get(map-get($colors, 'light'), 'text-primary');
-$text-secondary: map-get(map-get($colors, 'light'), 'text-secondary');
-$border: map-get(map-get($colors, 'light'), 'border');
-$accent: map-get(map-get($colors, 'light'), 'accent');
-$accent-hover: map-get(map-get($colors, 'light'), 'accent-hover');
+$bg-primary: map.get(map.get(vars.$colors, 'light'), 'bg-primary');
+$bg-secondary: map.get(map.get(vars.$colors, 'light'), 'bg-secondary');
+$bg-tertiary: map.get(map.get(vars.$colors, 'light'), 'bg-tertiary');
+$text-primary: map.get(map.get(vars.$colors, 'light'), 'text-primary');
+$text-secondary: map.get(map.get(vars.$colors, 'light'), 'text-secondary');
+$border: map.get(map.get(vars.$colors, 'light'), 'border');
+$accent: map.get(map.get(vars.$colors, 'light'), 'accent');
+$accent-hover: map.get(map.get(vars.$colors, 'light'), 'accent-hover');
 
 /* Styles pour le thème clair */
 body {
@@ -22,9 +25,9 @@ body {
 // Header
 .ant-layout-header {
   background-color: $bg-primary !important;
-  box-shadow: map-get(map-get($shadows, 'light'), 'sm') !important;
+  box-shadow: map.get(map.get(vars.$shadows, 'light'), 'sm') !important;
   position: relative !important;
-  z-index: map-get($z-layers, 'header') !important;
+  z-index: map.get(vars.$z-layers, 'header') !important;
 }
 
 // Menu
@@ -53,7 +56,7 @@ body {
 
   &::-webkit-scrollbar-thumb {
     background: $thumb-color;
-    border-radius: map-get($sizes, 'border-radius');
+    border-radius: map.get(vars.$sizes, 'border-radius');
 
     &:hover {
       background: $thumb-hover-color;
@@ -64,17 +67,18 @@ body {
 // Pour la scrollbar du Chat
 .acss-1v5259w {
   @include scrollbar-styles(
-    map-get($sizes, 'scrollbar', 'medium'),
+    map.get(map.get(vars.$sizes, 'scrollbar'), 'medium'),
     $bg-primary,
     $accent,
     $accent-hover
   );
+  width: 82%;
 }
 
 // Pour la scrollbar d'édition
 .acss-zrr53u {
   @include scrollbar-styles(
-    map-get($sizes, 'scrollbar', 'small'),
+    map.get(map.get(vars.$sizes, 'scrollbar'), 'small'),
     $bg-primary,
     $accent,
     $accent-hover
@@ -84,19 +88,89 @@ body {
 // Pour la scrollbar de la fenêtre de visualisation d'un document
 .max-h-\[60vh\] {
   @include scrollbar-styles(
-    map-get($sizes, 'scrollbar', 'medium'),
+    map.get(map.get(vars.$sizes, 'scrollbar'), 'medium'),
     $bg-primary,
     $accent,
     $accent-hover
   );
 }
 
-// Pour la scrollbar de la sidebar
-.container-sidebar {
-  @include scrollbar-styles(
-    map-get($sizes, 'scrollbar', 'small'),
-    $bg-primary,
-    $border,
-    $accent
-  );
+//Pour la scrollbar de la div des NewChat
+.flex-1.overflow-y-auto{
+
+  // Pour la scrollbar de la sidebar
+  &::-webkit-scrollbar {
+    width: map.get(map.get(vars.$sizes, 'scrollbar'), 'small');
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-primary;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $accent;
+    border-radius: map.get(vars.$sizes, 'border-radius');
+
+    &:hover {
+      background: $accent-hover;
+    }
+  }
+}
+
+//Pour la div contenant le bouton new chat
+.container-button-new-chat{
+  background-color: $bg-primary !important;
+  border-bottom: none;
+}
+
+
+/*---------------------------------------------Pour le choix des model----------------------------------------*/
+.container-model-sidebar {
+  background-color: $bg-primary  !important;
+  border: 1px solid $border  !important;
+  border-radius: 8px  !important;
+  padding: 12px  !important;
+  margin: 12px  !important;
+  width: 200px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+//Pour la liste déroulante
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector{
+  border-color : $border !important;
+  color: $text-primary !important;
+  border-radius: map.get(vars.$sizes, 'border-radius1') !important;
+}
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-select{
+  border-radius: map.get(vars.$sizes, 'border-radius1') !important;
+}
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-select > .ant-select-arrow > .anticon{
+  color: $text-secondary !important;
+}
+
+//Hover de la liste déroulante
+.container-list-model> .ant-select-focused{
+  border: 1px solid #888888 !important;
+}
+
+
+
+/*------------------Pour le chat------------------------*/
+// Pour la zone d'écriture des messages
+.ant-pro-chat-input-area {
+  border-radius: map.get(vars.$sizes, 'border-radius2') !important;
+  width: 60% !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  left: 22% !important;
+  transform: translateX(-50%) !important;
+  bottom: 7% !important;
+}
+
+.deleteButtonChat > .lucide.lucide-trash2{
+  opacity: 0 !important;
+}
+
+.chat-item:hover .deleteButtonChat > .lucide.lucide-trash2{
+  opacity: 1 !important;
 }

@@ -12,6 +12,7 @@ import os
 logger = logging.getLogger(__name__)
 
 class VectorStoreService:
+    
     def __init__(self):
         self.embeddings = FastEmbedEmbeddings()
         

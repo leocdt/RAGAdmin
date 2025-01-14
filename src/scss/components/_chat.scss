@@ -1,14 +1,24 @@
+@use 'sass:map';
+@use 'sass:color';
+@use '../abstracts/variables' as vars;
+@use '../themes/light' as light;
+
 [data-theme='dark'] {
     // Variables communes pour réutilisation
-    $bg-primary: map-get(map-get($colors, 'dark'), 'bg-primary');
-    $bg-secondary: map-get(map-get($colors, 'dark'), 'bg-secondary');
-    $text-primary: map-get(map-get($colors, 'dark'), 'text-primary');
-    $text-secondary: map-get(map-get($colors, 'dark'), 'text-secondary');
-    $border: map-get(map-get($colors, 'dark'), 'border');
-    $accent: map-get(map-get($colors, 'dark'), 'accent');
-    $accent-hover: map-get(map-get($colors, 'dark'), 'accent-hover');
-    $error: map-get(map-get($colors, 'dark'), 'error');
+    $bg-primary: map.get(map.get(vars.$colors, 'dark'), 'bg-primary');
+    $bg-secondary: map.get(map.get(vars.$colors, 'dark'), 'bg-secondary');
+    $text-primary: map.get(map.get(vars.$colors, 'dark'), 'text-primary');
+    $text-secondary: map.get(map.get(vars.$colors, 'dark'), 'text-secondary');
+    $border: map.get(map.get(vars.$colors, 'dark'), 'border');
+    $accent: map.get(map.get(vars.$colors, 'dark'), 'accent');
+    $accent-hover: map.get(map.get(vars.$colors, 'dark'), 'accent-hover');
+    $error: map.get(map.get(vars.$colors, 'dark'), 'error');
   
+    //Pour le div ou les chat sont contenue 
+    .acss-1v5259w{
+      background-color: #252525;
+      width: 82%;
+    }
     // Pour le titre
     h1 {
       color: $text-primary !important;
@@ -16,8 +26,18 @@
   
     // Pour la zone d'écriture des messages
     .ant-pro-chat-input-area {
-      background: darken($bg-primary, 5%) !important;
-      border-radius: map-get($sizes, 'border-radius', 'xl') !important;
+      background: color.scale($bg-primary, $lightness: -5%) !important;
+      border-radius: map.get(vars.$sizes, 'border-radius2') !important;
+      width: 60% !important;
+      margin: 0 auto !important;
+      position: relative !important;
+      left: 22% !important;
+      transform: translateX(-50%) !important;
+      bottom: 7% !important;
+    }
+
+    :has(.ant-pro-chat-input-area ){
+      background-color: #252525;
     }
   
     // Pour l'écriture des erreurs
@@ -46,12 +66,20 @@
     .zcss-1hxup8p > p {
       color: $text-primary !important;
     }
+
+    .zcss-1hxup8p{
+      color: $text-primary !important;
+    }
   
     // Pour le bouton de retour vers le dernier message
     .acss-1kwsnuy {
       color: $accent !important;
     }
   
+    //Pour l'heure des message
+    .css-12x47oo{
+      color : $text-secondary !important;
+    }
     // Pour la zone de saisie de message
     .acss-6ckfqf {
       background-color: $bg-secondary !important;
@@ -65,6 +93,10 @@
     // Lorsque l'on clique sur la zone de saisie de message
     .ant-select-focused {
       border: 1px solid $accent !important;
+    }
+
+    .ant-select-selector{
+      border-radius: map.get(vars.$sizes, 'border-radius2') !important;
     }
   
     // Pour le texte de la zone de saisie de message
@@ -139,23 +171,12 @@
     // Pour la scrollbar d'édition
     .acss-zrr53u {
       color: $text-primary !important;
-  
-      &::-webkit-scrollbar {
-        width: map-get($sizes, 'scrollbar', 'small') !important;
-      }
-  
-      &::-webkit-scrollbar-track {
-        background: $bg-primary !important;
-      }
-  
-      &::-webkit-scrollbar-thumb {
-        background: $border;
-        border-radius: map-get($sizes, 'border-radius');
-  
-        &:hover {
-          background: #555555;
-        }
-      }
+      @include light.scrollbar-styles(
+        map.get(map.get(vars.$sizes, 'scrollbar'), 'small'),
+        $bg-primary,
+        $border,
+        #555555
+      );
     }
   
     // Pour les boutons dans éditer
@@ -176,21 +197,11 @@
   
     // Pour la scrollbar du chat
     .acss-1v5259w {
-      &::-webkit-scrollbar {
-        width: map-get($sizes, 'scrollbar', 'medium');
-      }
-  
-      &::-webkit-scrollbar-track {
-        background: $bg-primary;
-      }
-  
-      &::-webkit-scrollbar-thumb {
-        background: $border;
-        border-radius: map-get($sizes, 'border-radius');
-  
-        &:hover {
-          background: #555555;
-        }
-      }
+      @include light.scrollbar-styles(
+        map.get(map.get(vars.$sizes, 'scrollbar'), 'medium'),
+        $bg-primary,
+        $border,
+        #555555
+      );
     }
   }

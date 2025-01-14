@@ -9,3 +9,11 @@ class Document(models.Model):
 
     def __str__(self):
         return self.name
+
+class SharedChat(models.Model):
+    chat_id = models.CharField(max_length=255, unique=True)
+    history = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"SharedChat {self.chat_id}"

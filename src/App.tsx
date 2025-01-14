@@ -20,6 +20,7 @@ const App: React.FC = () => {
               <Route path="/" element={<Chat />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/chat/:chatId" element={<Chat />} />
+              <Route path="/shared-chat/:chatId" element={<Chat />} />
               <Route path="/insert-data" element={<InsertData />} />
               <Route path="/documents" element={<Documents />} />
             </Routes>
