@@ -73,24 +73,39 @@ class ChatService:
         """Determine if the query needs document context."""
         context_check_prompt = PromptTemplate.from_template(
             """
-            Determine if this question requires accessing document/file context.
-            Question: {query}
-            
-            Instructions:
-            1. Respond with 'YES' if the question:
-               - Mentions any character names (like Alice, White Rabbit, etc.)
-               - References any book or document content
-               - Asks about specific document information
-               - Contains terms that might be found in uploaded documents
-            2. The response must be exactly 'YES' or 'NO' (case sensitive)
-            
-            Current question analysis:
-            1. Does it mention any names or characters? (Alice, etc.)
-            2. Does it ask about document content?
-            3. Is it seeking specific information that would be in documents?
+Determine if this question requires accessing document/file context.
+Question: {query}
 
-            Response (YES/NO):
-            """
+Instructions:
+1. Respond with 'YES' if the question:
+   - Mentions ANY specific names, terms, or entities.
+   - References ANY file, document, or content (e.g., "in the file", "in the document").
+   - Asks about details or data that might exist in a file (PDF, text, etc.).
+   - Contains terms or phrases that suggest consulting or analyzing external content.
+   - Asks "who is", "what is", "explain", or similar questions about specific topics or entities.
+2. The response must be exactly 'YES' or 'NO' (case sensitive).
+3. If in doubt, respond with 'YES'.
+
+Analysis steps:
+1. Does the question mention or imply the need for file or document content? -> YES
+2. Does it ask about terms, data, or context that could exist in a document or file? -> YES
+3. Does it suggest consulting external information or specific content? -> YES
+4. Could this information reasonably exist in a file format (PDF, text, etc.)? -> YES
+5. Is there ANY uncertainty about whether accessing a document would help? -> YES
+
+For example:
+- "What is mentioned in the report?" -> YES (references a document or file).
+- "Explain the terms in this file" -> YES (asks about file content).
+- "How do I create a loop in Python?" -> NO (general programming question).
+- "What does the document say about budgets?" -> YES (references document content).
+- "Tell me about the data in the file" -> YES (references external content).
+- "Maths questions" -> NO (general math question).
+
+If the question does not require document context, respond with 'NO'.
+
+Final response (YES/NO):
+"""
+
         )
         
         response = self.llm.invoke(context_check_prompt.format(query=query))
