@@ -36,8 +36,9 @@ Lancer backend : **python manage.py runserver**
 
 Dans un autre terminal   
 
-/RAGAdmin, installer npm : **npm install**  
-Lancer le front : **npm start**  
+/RAGAdmin, installer npm : **npm i**  
+Lancer le front : **npm run dev**  
+
    
 ### 2.2 Windows  
 Dans RAGAdmin/backend, installer les modules : **pip install -r requirements.txt**  
@@ -45,12 +46,16 @@ Lancer backend : **python manage.py runserver**
 
 Dans un autre terminal   
 
-/RAGAdmin, installer npm : **npm install**  
-Lancer le front : **npm start**  
+/RAGAdmin, installer npm : **npm i**  
+Lancer le front : **npm run dev**  
 
 ---
 
-## Contributions  
+### 2.3 OLLAMA
+Installer Ollama : https://ollama.com 
+Sur un terminal : ollama serve
+Sur un autre : ollama run llama3.1:8b
+
 
 
 
