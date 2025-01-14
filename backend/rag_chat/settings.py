@@ -118,9 +118,14 @@ CORS_ALLOW_HEADERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# ChromaDB settings
+CHROMA_DB_DIR = os.path.join(BASE_DIR, "chroma_db")
+# Ensure the ChromaDB directory exists
+os.makedirs(CHROMA_DB_DIR, exist_ok=True)
+
 OLLAMA_MODEL = "llama3.1:8b"
 OLLAMA_HOST = "http://192.168.137.2:11434"  # Default Ollama host
 CHROMA_SETTINGS = {
-    "persist_directory": "./chroma_db",
+    "persist_directory": CHROMA_DB_DIR,
     "anonymized_telemetry": False
 }
