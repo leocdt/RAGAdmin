@@ -1,7 +1,8 @@
 Django==4.2.7
 djangorestframework==3.14.0
 django-cors-headers==4.3.0
-chromadb==0.4.15
+chromadb==0.3.29
+chroma-hnswlib==0.7.3
 PyPDF2==3.0.1
 langchain
 langchain-community
@@ -12,4 +13,3 @@ pdfplumber
 ollama
 sentence_transformers
 tzdata
-pysqlite3-binary
