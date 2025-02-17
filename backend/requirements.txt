@@ -12,3 +12,4 @@ pdfplumber
 ollama
 sentence_transformers
 tzdata
+pysqlite3-binary
