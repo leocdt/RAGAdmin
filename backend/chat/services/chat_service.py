@@ -19,6 +19,7 @@ class ChatService:
     def __init__(self, vector_store_service):
         self.vector_store_service = vector_store_service
         self.chat_histories = {}  # Dictionary to store histories for each chat ID
+        self.current_model = settings.OLLAMA_MODEL  # Default model
         self.llm = Ollama(model=settings.OLLAMA_MODEL)
         
         # Initialiser l'encoder une seule fois
@@ -67,6 +68,18 @@ class ChatService:
             """
         )
 
+    def set_model(self, model_name: str):
+        """Change le modèle LLM."""
+        if model_name and model_name != self.current_model:
+            try:
+                logger.info(f"Changing model from {self.current_model} to {model_name}")
+                self.current_model = model_name
+                self.llm = Ollama(model=model_name)
+                logger.info(f"Model successfully changed to {model_name}")
+            except Exception as e:
+                logger.error(f"Error switching to model {model_name}: {str(e)}")
+                raise
+
     def should_use_context(self, query: str) -> bool:
         """Determine if the query needs document context."""
         context_check_prompt = PromptTemplate.from_template(
@@ -99,7 +112,9 @@ class ChatService:
         
         return response.strip().upper() == 'YES'
 
-    def generate_response(self, query: str, chat_id: str, history: list = None):
+    def generate_response(self, query: str, chat_id: str, history: list = None, model: str = None):
+        if model and model != self.current_model:
+            self.set_model(model)
         try:
             # Initialize or get chat history for this specific chat_id
             if chat_id not in self.chat_histories:

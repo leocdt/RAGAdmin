@@ -16,6 +16,8 @@ from PyPDF2 import PdfReader
 from sentence_transformers import SentenceTransformer, util
 import torch
 from django.http import StreamingHttpResponse
+import subprocess
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -31,18 +33,7 @@ class ChatView(APIView):
         message = request.data.get('message', '')
         history = request.data.get('history', [])
         chat_id = request.data.get('chatId', '')
-        
-        # Map the history roles correctly
-        formatted_history = []
-        for msg in history:
-            role = msg.get('role', '')
-            # Map 'ai' role to 'assistant'
-            if role == 'ai':
-                role = 'assistant'
-            formatted_history.append({
-                'role': role,
-                'content': msg.get('content', '')
-            })
+        model = request.data.get('model', '')  # Récupération du modèle
         
         if not message or not chat_id:
             return Response(
@@ -51,10 +42,12 @@ class ChatView(APIView):
             )
 
         try:
+            # Passer le modèle au service
             response = chat_service.generate_response(
                 message, 
                 chat_id, 
-                formatted_history
+                history,
+                model  # Ajout du modèle ici
             )
             
             def stream_response():
@@ -167,4 +160,29 @@ class DocumentContentView(APIView):
             return Response(
                 {'error': 'Document not found'},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+class ModelListView(APIView):
+    def get(self, request):
+        try:
+            # Run ollama list command and capture output
+            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+            
+            if result.returncode != 0:
+                return Response(
+                    {'error': 'Failed to get model list'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            
+            # Parse the output to extract model names
+            lines = result.stdout.strip().split('\n')[1:]  # Skip header line
+            models = [line.split()[0] for line in lines if line]
+            
+            return Response({'models': models})
+            
+        except Exception as e:
+            logger.error(f"Error getting model list: {str(e)}")
+            return Response(
+                {'error': 'Failed to get model list'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

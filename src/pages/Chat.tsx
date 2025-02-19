@@ -4,6 +4,8 @@ import type { ChatMessage } from '@ant-design/pro-chat';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
+import { Select } from 'antd';
+import axios from 'axios';
 
 interface ChatSession {
   id: string;
@@ -20,6 +22,8 @@ const Chat: React.FC = () => {
   });
   const [currentChat, setCurrentChat] = useState<Record<string, ChatMessage> | null>(null);
   const chatKey = useRef(0);
+  const [models, setModels] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('');
 
   useEffect(() => {
     if (!chatId && chatSessions.length === 0) {
@@ -45,6 +49,23 @@ const Chat: React.FC = () => {
     }
   }, [chatId, chatSessions]);
 
+  useEffect(() => {
+    // Fetch available models
+    const fetchModels = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/models/');
+        setModels(response.data.models);
+        if (response.data.models.length > 0) {
+          setSelectedModel(response.data.models[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching models:', error);
+      }
+    };
+
+    fetchModels();
+  }, []);
+
   const handleNewChat = () => {
     const newChatId = uuidv4();
     const newSession = { id: newChatId, title: 'New Chat', messages: {} };
@@ -65,20 +86,17 @@ const Chat: React.FC = () => {
         role: msg.role === 'assistant' ? 'ai' : 'human'
       }));
       
-      const response = await fetch('http://localhost:8000/api/chat/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message: lastMessage,
-          chatId: chatId,
-          history: history
-        }),
+      // Utilisez axios au lieu de fetch pour plus de cohérence
+      const response = await axios.post('http://localhost:8000/api/chat/', { 
+        message: lastMessage,
+        chatId: chatId,
+        history: history,
+        model: selectedModel // Envoi du modèle sélectionné
+      }, {
+        responseType: 'stream'
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response;
+      return new Response(response.data);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -119,7 +137,16 @@ const Chat: React.FC = () => {
         onNewChat={handleNewChat}
         currentChatId={chatId}
       />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
+        <div className="p-4 border-b">
+          <Select
+            className="w-48"
+            value={selectedModel}
+            onChange={setSelectedModel}
+            options={models.map(model => ({ label: model, value: model }))}
+            placeholder="Select Model"
+          />
+        </div>
         {currentChat !== null && chatId && (
           <ProChat
             key={chatKey.current}
