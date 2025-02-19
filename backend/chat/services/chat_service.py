@@ -16,11 +16,11 @@ from zoneinfo import ZoneInfo
 logger = logging.getLogger(__name__)
 
 class ChatService:
-    def __init__(self, vector_store_service):
+    def __init__(self, vector_store_service, model_name="llama2"):
         self.vector_store_service = vector_store_service
         self.chat_histories = {}  # Dictionary to store histories for each chat ID
-        self.current_model = settings.OLLAMA_MODEL  # Default model
-        self.llm = Ollama(model=settings.OLLAMA_MODEL)
+        self.model_name = model_name
+        self.llm = Ollama(model=self.model_name)
         
         # Initialiser l'encoder une seule fois
         self.encoder = SentenceTransformer("paraphrase-mpnet-base-v2")
@@ -46,7 +46,7 @@ class ChatService:
             You are RAGAdmin, a technical assistant powered by LLama. Here are your session details:
             - Session ID: {chat_id}
             - Current Date: {current_date}
-            - Model: LLama 3.1 8B
+            - Model:
             - Knowledge cutoff: 2023
             
             Instructions:
@@ -65,43 +65,47 @@ class ChatService:
             Question: {input}
 
             Remember: First determine if the question requires document context. If not, ignore the document context completely and answer based on your general knowledge. Do not make assumptions beyond the provided information or the document context.
+            Respond in the same language as the question.
             """
         )
-
-    def set_model(self, model_name: str):
-        """Change le modèle LLM."""
-        if model_name and model_name != self.current_model:
-            try:
-                logger.info(f"Changing model from {self.current_model} to {model_name}")
-                self.current_model = model_name
-                self.llm = Ollama(model=model_name)
-                logger.info(f"Model successfully changed to {model_name}")
-            except Exception as e:
-                logger.error(f"Error switching to model {model_name}: {str(e)}")
-                raise
 
     def should_use_context(self, query: str) -> bool:
         """Determine if the query needs document context."""
         context_check_prompt = PromptTemplate.from_template(
             """
-            Determine if this question requires accessing document/file context.
-            Question: {query}
-            
-            Instructions:
-            1. Respond with 'YES' if the question:
-               - Mentions any character names (like Alice, White Rabbit, etc.)
-               - References any book or document content
-               - Asks about specific document information
-               - Contains terms that might be found in uploaded documents
-            2. The response must be exactly 'YES' or 'NO' (case sensitive)
-            
-            Current question analysis:
-            1. Does it mention any names or characters? (Alice, etc.)
-            2. Does it ask about document content?
-            3. Is it seeking specific information that would be in documents?
+Determine if this question requires accessing document/file context.
+Question: {query}
 
-            Response (YES/NO):
-            """
+Instructions:
+1. Respond with 'YES' if the question:
+   - Mentions ANY specific names, terms, or entities.
+   - References ANY file, document, or content (e.g., "in the file", "in the document").
+   - Asks about details or data that might exist in a file (PDF, text, etc.).
+   - Contains terms or phrases that suggest consulting or analyzing external content.
+   - Asks "who is", "what is", "explain", or similar questions about specific topics or entities.
+2. The response must be exactly 'YES' or 'NO' (case sensitive).
+3. If in doubt, respond with 'YES'.
+
+Analysis steps:
+1. Does the question mention or imply the need for file or document content? -> YES
+2. Does it ask about terms, data, or context that could exist in a document or file? -> YES
+3. Does it suggest consulting external information or specific content? -> YES
+4. Could this information reasonably exist in a file format (PDF, text, etc.)? -> YES
+5. Is there ANY uncertainty about whether accessing a document would help? -> YES
+
+For example:
+- "What is mentioned in the report?" -> YES (references a document or file).
+- "Explain the terms in this file" -> YES (asks about file content).
+- "How do I create a loop in Python?" -> NO (general programming question).
+- "What does the document say about budgets?" -> YES (references document content).
+- "Tell me about the data in the file" -> YES (references external content).
+- "Maths questions" -> NO (general math question).
+
+If the question does not require document context, respond with 'NO'.
+
+Final response (YES/NO):
+"""
+
         )
         
         response = self.llm.invoke(context_check_prompt.format(query=query))
@@ -112,9 +116,7 @@ class ChatService:
         
         return response.strip().upper() == 'YES'
 
-    def generate_response(self, query: str, chat_id: str, history: list = None, model: str = None):
-        if model and model != self.current_model:
-            self.set_model(model)
+    def generate_response(self, query: str, chat_id: str, history: list = None):
         try:
             # Initialize or get chat history for this specific chat_id
             if chat_id not in self.chat_histories:
