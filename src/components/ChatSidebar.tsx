@@ -1,6 +1,6 @@
-import React from 'react';
-import { Menu } from 'antd';
-import { MessageSquare, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, Input, Popconfirm } from 'antd';
+import { MessageSquare, Plus, Edit2, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface ChatSession {
@@ -13,9 +13,38 @@ interface ChatSidebarProps {
   chats: ChatSession[];
   onNewChat: () => void;
   currentChatId?: string;
+  onRenameChat: (chatId: string, newTitle: string) => void;
+  onDeleteChat: (chatId: string) => void;
 }
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, currentChatId }) => {
+const ChatSidebar: React.FC<ChatSidebarProps> = ({ 
+  chats, 
+  onNewChat, 
+  currentChatId,
+  onRenameChat,
+  onDeleteChat 
+}) => {
+  const [editingChatId, setEditingChatId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+
+  const handleStartEdit = (chatId: string, title: string) => {
+    setEditingChatId(chatId);
+    setEditTitle(title);
+  };
+
+  const handleFinishEdit = () => {
+    if (editingChatId && editTitle.trim()) {
+      onRenameChat(editingChatId, editTitle.trim());
+    }
+    setEditingChatId(null);
+    setEditTitle('');
+  };
+
+  const handleDoubleClick = (chatId: string, title: string) => {
+    setEditingChatId(chatId);
+    setEditTitle(title);
+  };
+
   return (
     <div className="w-64 bg-white border-r h-full overflow-y-auto container-sidebar">
       <div className="p-4 pt-8 flex justify-center">
@@ -33,9 +62,52 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ chats, onNewChat, currentChat
         items={chats.map((chat) => ({
           key: chat.id,
           icon: <MessageSquare size={16} />,
-          label: <Link to={`/chat/${chat.id}`}>{chat.title}</Link>,
+          label: (
+            <div className="flex items-center justify-between w-full pr-2">
+              {editingChatId === chat.id ? (
+                <Input
+                  size="small"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  onPressEnter={handleFinishEdit}
+                  onBlur={handleFinishEdit}
+                  autoFocus
+                />
+              ) : (
+                <>
+                  <Link 
+                    to={`/chat/${chat.id}`} 
+                    className="flex-1"
+                    onDoubleClick={(e) => {
+                      e.preventDefault();
+                      handleDoubleClick(chat.id, chat.title);
+                    }}
+                  >
+                    {chat.title}
+                  </Link>
+                  <div className="chat-actions">
+                    <Popconfirm
+                      title="Delete chat"
+                      description="Are you sure you want to delete this chat?"
+                      onConfirm={(e) => {
+                        e?.stopPropagation();
+                        onDeleteChat(chat.id);
+                      }}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Trash2
+                        size={14}
+                        className="cursor-pointer text-gray-500 hover:text-red-500"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Popconfirm>
+                  </div>
+                </>
+              )}
+            </div>
+          ),
         }))}
-        
       />
     </div>
   );

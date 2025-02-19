@@ -130,12 +130,46 @@ const Chat: React.FC = () => {
     return 'New Chat';
   };
 
+  const handleRenameChat = (chatId: string, newTitle: string) => {
+    setChatSessions(prev => {
+      const updated = prev.map(session => 
+        session.id === chatId 
+          ? { ...session, title: newTitle }
+          : session
+      );
+      localStorage.setItem('chat_sessions', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleDeleteChat = (chatId: string) => {
+    setChatSessions(prev => {
+      const updated = prev.filter(session => session.id !== chatId);
+      localStorage.setItem('chat_sessions', JSON.stringify(updated));
+      return updated;
+    });
+    
+    // Fix the condition check - it was comparing chatId with itself
+    if (chatId === useParams().chatId) { // Changed this line
+      if (chatSessions.length > 1) {
+        const nextChat = chatSessions.find(session => session.id !== chatId);
+        if (nextChat) {
+          navigate(`/chat/${nextChat.id}`);
+        }
+      } else {
+        handleNewChat();
+      }
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-64px)]">
       <ChatSidebar 
         chats={chatSessions}
         onNewChat={handleNewChat}
         currentChatId={chatId}
+        onRenameChat={handleRenameChat}
+        onDeleteChat={handleDeleteChat}
       />
       <div className="flex flex-1">
         <div className="flex-1">

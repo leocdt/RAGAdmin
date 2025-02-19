@@ -13,3 +13,21 @@ body {
 .ant-layout {
   background-color: #f0f2f5;
 }
+
+.container-sidebar .ant-menu-item:hover .chat-actions {
+  opacity: 1;
+}
+
+.container-sidebar .chat-actions {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: relative; /* Add this */
+}
+
+.ant-popconfirm {
+  z-index: 1100;
+}
+
+.container-sidebar .ant-popover {
+  z-index: 1100;
+}
