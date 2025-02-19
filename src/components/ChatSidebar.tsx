@@ -63,7 +63,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           key: chat.id,
           icon: <MessageSquare size={16} />,
           label: (
-            <div className="flex items-center justify-between w-full pr-2">
+            <div className="flex items-center justify-between w-full pr-2 relative">
               {editingChatId === chat.id ? (
                 <Input
                   size="small"
@@ -77,7 +77,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 <>
                   <Link 
                     to={`/chat/${chat.id}`} 
-                    className="flex-1"
+                    className="flex-1 truncate mr-6" // Added margin-right to make space for delete button
                     onDoubleClick={(e) => {
                       e.preventDefault();
                       handleDoubleClick(chat.id, chat.title);
@@ -85,7 +85,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   >
                     {chat.title}
                   </Link>
-                  <div className="chat-actions">
+                  <div className="chat-actions absolute right-2" style={{ zIndex: 100 }}>
                     <Popconfirm
                       title="Delete chat"
                       description="Are you sure you want to delete this chat?"
