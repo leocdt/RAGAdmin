@@ -116,8 +116,13 @@ Final response (YES/NO):
         
         return response.strip().upper() == 'YES'
 
-    def generate_response(self, query: str, chat_id: str, history: list = None):
+    def generate_response(self, query: str, chat_id: str, history: list = None, model: str = None):
         try:
+            # Update model if specified
+            if model and model != self.model_name:
+                self.model_name = model
+                self.llm = Ollama(model=self.model_name)
+            
             # Initialize or get chat history for this specific chat_id
             if chat_id not in self.chat_histories:
                 self.chat_histories[chat_id] = []
