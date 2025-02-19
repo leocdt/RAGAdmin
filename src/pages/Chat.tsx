@@ -53,7 +53,7 @@ const Chat: React.FC = () => {
     // Fetch available models
     const fetchModels = async () => {
       try {
-        const response = await axios.get('http://192.168.99.102:8000/api/models/');
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/models/`);
         setModels(response.data.models);
         if (response.data.models.length > 0) {
           setSelectedModel(response.data.models[0]);
@@ -87,7 +87,7 @@ const Chat: React.FC = () => {
       }));
       
       // Utilisez axios au lieu de fetch pour plus de cohérence
-      const response = await axios.post('http://192.168.99.102:8000/api/chat/', { 
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat/`, { 
         message: lastMessage,
         chatId: chatId,
         history: history,

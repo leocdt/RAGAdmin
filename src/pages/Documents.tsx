@@ -27,7 +27,7 @@ const Documents: React.FC = () => {
 
   const fetchDocuments = async () => {
     try {
-      const response = await axios.get('http://192.168.99.102:8000/api/documents/');
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}:8000/api/documents/`);
       setDocuments(response.data);
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -42,7 +42,7 @@ const Documents: React.FC = () => {
   const handleDelete = async (id: string) => {
     setLoading(true);
     try {
-      await axios.delete(`http://192.168.99.102:8000/api/documents/${id}/`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${id}/`);
       message.success('Document deleted successfully');
       fetchDocuments();
     } catch (error) {
@@ -56,7 +56,7 @@ const Documents: React.FC = () => {
   const handleView = async (id: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://192.168.99.102:8000/api/documents/${id}/content/`);
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/documents/${id}/content/`);
       setSelectedDocument(response.data);
       setIsModalVisible(true);
     } catch (error) {
