@@ -33,7 +33,8 @@ class ChatView(APIView):
         message = request.data.get('message', '')
         history = request.data.get('history', [])
         chat_id = request.data.get('chatId', '')
-        model = request.data.get('model', '')  # Récupération du modèle
+        model = request.data.get('model', '')
+        use_context = request.data.get('useContext', True) 
         
         if not message or not chat_id:
             return Response(
@@ -47,7 +48,8 @@ class ChatView(APIView):
                 message, 
                 chat_id, 
                 history,
-                model  # Ajout du modèle ici
+                model,  # Ajout du modèle ici
+                use_context  # Pass useContext to generate_response
             )
             
             def stream_response():

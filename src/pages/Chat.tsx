@@ -4,8 +4,9 @@ import type { ChatMessage } from '@ant-design/pro-chat';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatSidebar from '../components/ChatSidebar';
-import { Select } from 'antd';
+import { Select, Switch } from 'antd'; // Added Switch import
 import axios from 'axios';
+import { Database } from 'lucide-react';
 
 interface ChatSession {
   id: string;
@@ -24,6 +25,7 @@ const Chat: React.FC = () => {
   const chatKey = useRef(0);
   const [models, setModels] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('');
+  const [useContext, setUseContext] = useState(true);
 
   useEffect(() => {
     if (!chatId && chatSessions.length === 0) {
@@ -91,7 +93,8 @@ const Chat: React.FC = () => {
         message: lastMessage,
         chatId: chatId,
         history: history,
-        model: selectedModel // Envoi du modèle sélectionné
+        model: selectedModel, // Envoi du modèle sélectionné
+        useContext: useContext // Add useContext parameter
       }, {
         responseType: 'stream'
       });
@@ -170,6 +173,8 @@ const Chat: React.FC = () => {
         currentChatId={chatId}
         onRenameChat={handleRenameChat}
         onDeleteChat={handleDeleteChat}
+        useContext={useContext}
+        onToggleContext={setUseContext}
       />
       <div className="flex flex-1">
         <div className="flex-1">
@@ -190,13 +195,26 @@ const Chat: React.FC = () => {
         </div>
         <div className="w-48 p-4 border-l">
           <Select
-            className="w-full"
+            className="w-full mb-4"  // Added margin bottom
             value={selectedModel}
             onChange={setSelectedModel}
             options={models.map(model => ({ label: model, value: model }))}
             placeholder="Select Model"
             style={{ backgroundColor: 'white' }}
           />
+          
+          {/* Add Context Toggle */}
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2 text-sm">
+              <Database size={16} />
+              Use Context
+            </span>
+            <Switch
+              checked={useContext}
+              onChange={setUseContext}
+              size="small"
+            />
+          </div>
         </div>
       </div>
     </div>

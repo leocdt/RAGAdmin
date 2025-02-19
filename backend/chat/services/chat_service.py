@@ -116,7 +116,7 @@ Final response (YES/NO):
         
         return response.strip().upper() == 'YES'
 
-    def generate_response(self, query: str, chat_id: str, history: list = None, model: str = None):
+    def generate_response(self, query: str, chat_id: str, history: list = None, model: str = None, use_context: bool = True):
         try:
             # Update model if specified
             if model and model != self.model_name:
@@ -146,13 +146,11 @@ Final response (YES/NO):
             print(f"\n=== Chat History ===")
             print(formatted_history)
             
-            # Check if we need document context
-            needs_context = self.should_use_context(query)
             print(f"\n=== Context Check ===")
             print(f"Query: {query}")
-            print(f"Needs context: {needs_context}")
+            print(f"Using context: {use_context}")
             
-            if needs_context:
+            if use_context:
                 # Get documents from vector store
                 vector_store = self.vector_store_service.vector_store
                 
