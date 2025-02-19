@@ -137,33 +137,35 @@ const Chat: React.FC = () => {
         onNewChat={handleNewChat}
         currentChatId={chatId}
       />
-      <div className="flex-1 flex flex-col">
-        <div className="p-4 border-b">
+      <div className="flex flex-1">
+        <div className="flex-1">
+          {currentChat !== null && chatId && (
+            <ProChat
+              key={chatKey.current}
+              style={{ height: '100%' }}
+              helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
+              request={handleMessageSend}
+              initialChats={currentChat}
+              onChatsChange={handleChatsChange}
+              inputAreaProps={{
+                placeholder: 'Enter your message...',
+              }}
+              locale="en-US"
+            />
+          )}
+        </div>
+        <div className="w-48 p-4 border-l">
           <Select
-            className="w-48"
+            className="w-full"
             value={selectedModel}
             onChange={setSelectedModel}
             options={models.map(model => ({ label: model, value: model }))}
             placeholder="Select Model"
+            style={{ backgroundColor: 'white' }}
           />
         </div>
-        {currentChat !== null && chatId && (
-          <ProChat
-            key={chatKey.current}
-            style={{ height: '100%' }}
-            helloMessage="Welcome to RAGAdmin, your open-source RAG application!"
-            request={handleMessageSend}
-            initialChats={currentChat}
-            onChatsChange={handleChatsChange}
-            inputAreaProps={{
-              placeholder: 'Enter your message...',
-            }}
-            locale="en-US"
-          />
-        )}
       </div>
     </div>
-
   );
 };
 
