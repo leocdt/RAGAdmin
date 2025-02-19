@@ -27,7 +27,7 @@ const Documents: React.FC = () => {
 
   const fetchDocuments = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}:8000/api/documents/`);
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/documents/`);
       setDocuments(response.data);
     } catch (error) {
       console.error('Error fetching documents:', error);

@@ -30,3 +30,6 @@ backend/rag_chat/__pycache__
 backend/chat/__pycache__
 backend/chat/services/__pycache__
 backend/chat/migrations/__pycache__
+backend/chroma_db
+backend/chroma_db/chroma.sqlite3
+backend/db.sqlite3
