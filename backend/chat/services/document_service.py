@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 class DocumentService:
     def __init__(self):
         self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1024,
-            chunk_overlap=80,
+            chunk_size=2048,  # Increase from 1024
+            chunk_overlap=200,  # Increase from 80
             length_function=len,
             is_separator_regex=False
         )
