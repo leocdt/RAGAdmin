@@ -1,75 +1,150 @@
 import logging
 from typing import List, Dict, Any
-from langchain.schema import Document
+from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
+from langchain.schema import Document  # Add this import
 from django.conf import settings
 import chromadb
-from chromadb.config import Settings
 import shutil
 import os
+import time
 
 logger = logging.getLogger(__name__)
 
 class VectorStoreService:
     def __init__(self):
-        self.embeddings = FastEmbedEmbeddings()
-        
-        # Initialize vector store with existing database if it exists
-        persist_dir = settings.CHROMA_SETTINGS["persist_directory"]
-        self.vector_store = Chroma(
-            persist_directory=persist_dir,
-            embedding_function=self.embeddings,
-            collection_name="documents"
+        # Initialize embeddings with minimal configuration
+        self.embeddings = OllamaEmbeddings(
+            base_url=settings.OLLAMA_HOST,
+            model=settings.OLLAMA_MODEL
         )
         
-        collection_size = len(self.vector_store.get()['ids'])
-        logger.info(f"Initialized Chroma database with {collection_size} existing documents")
+        # Use ChromaDB HTTP client to connect to the server
+        client = chromadb.HttpClient(
+            host=settings.CHROMA_SETTINGS["chroma_server_host"],
+            port=settings.CHROMA_SETTINGS["chroma_server_port"],
+        )
+        
+        # Initialize vector store with HTTP client
+        self.vector_store = Chroma(
+            client=client,
+            embedding_function=self.embeddings,
+            collection_name="documents",
+        )
 
     def add_documents(self, documents: List[Document]) -> None:
-        """Add documents to the vector store."""
-        try:
-            # Add documents
-            self.vector_store.add_documents(documents)
-            self.vector_store.persist()
-            
-            # Verify size after addition
-            collection_size = len(self.vector_store.get()['ids'])
-            logger.info(f"Vector store now contains {collection_size} documents")
-            
-        except Exception as e:
-            logger.error(f"Error adding documents to vector store: {str(e)}")
-            raise
+        """Add documents to the vector store with retries."""
+        max_retries = 3
+        retry_delay = 1
+        
+        for attempt in range(max_retries):
+            try:
+                # Add documents in smaller batches
+                batch_size = 5
+                for i in range(0, len(documents), batch_size):
+                    batch = documents[i:i + batch_size]
+                    self.vector_store.add_documents(
+                        documents=batch,
+                        ids=[f"{doc.metadata['chroma_id']}_{i}" for i, doc in enumerate(batch)]
+                    )
+                    logger.info(f"Added batch of {len(batch)} documents")
+                return
+            except Exception as e:
+                logger.error(f"Attempt {attempt + 1} failed: {str(e)}")
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(retry_delay * (attempt + 1))
 
-    def search_documents(self, query: str, k: int = 10) -> List[Document]:
-        """Search for relevant documents based on query."""
+    def search_documents(self, query: str, k: int = 5) -> List[Document]:
+        """Enhanced document search with topic filtering."""
         try:
-            # Vérifier que la collection n'est pas vide
-            collection_size = len(self.vector_store.get()['ids'])
-            if collection_size == 0:
-                logger.warning("Vector store is empty!")
-                return []
+            # Get all documents
+            all_results = self.vector_store.get()
+            
+            # Create document collections
+            header_docs = []
+            content_docs = []
+            
+            # First pass: Organize documents
+            for i, metadata in enumerate(all_results['metadatas']):
+                doc = Document(
+                    page_content=all_results['documents'][i],
+                    metadata=metadata
+                )
                 
-            logger.info(f"Searching in {collection_size} documents")
+                # Headers get priority
+                if metadata.get('chunk_id', 999) == 0:
+                    header_docs.append(doc)
+                else:
+                    content_docs.append(doc)
             
-            # Rechercher les documents
-            results = self.vector_store.max_marginal_relevance_search(
-                query,
-                k=8,
-                fetch_k=20,  # Fetch more candidates
-                lambda_mult=0.5  # Balance relevance vs diversity
-            )
+            # Extract key topics from query
+            topic_keywords = self._extract_topic_keywords(query)
+            logger.info(f"Extracted topics from query: {topic_keywords}")
             
-            # Log les résultats
-            logger.info(f"Found {len(results)} relevant documents")
-            for doc in results:
-                logger.info(f"Found document: {doc.metadata.get('filename')} - Content preview: {doc.page_content[:100]}...")
+            # Score documents based on topic relevance
+            topic_scores = {}
+            for i, doc in enumerate(header_docs + content_docs):
+                doc_id = id(doc)  # Use object id as dictionary key
+                content = doc.page_content.lower()
+                topic_scores[doc_id] = self._calculate_topic_relevance(content, topic_keywords)
             
-            return results
+            # Filter documents by minimum topic relevance
+            min_relevance_threshold = 0.2
+            relevant_docs = []
+            for doc in header_docs + content_docs:
+                if topic_scores[id(doc)] >= min_relevance_threshold:
+                    relevant_docs.append((doc, topic_scores[id(doc)]))
             
+            # Sort by relevance score
+            relevant_docs.sort(key=lambda x: x[1], reverse=True)
+            
+            # Get final results
+            results = [doc for doc, _ in relevant_docs[:k]]
+            
+            # Log results
+            logger.info(f"Query: {query}")
+            logger.info(f"Found {len(results)} relevant documents out of {len(header_docs + content_docs)}")
+            
+            return results[:k]
+                
         except Exception as e:
-            logger.error(f"Error searching documents: {str(e)}")
+            logger.error(f"Search error: {str(e)}")
             raise
+        
+    def _extract_topic_keywords(self, query: str) -> List[str]:
+        """Extract main topic keywords from the query."""
+        # Stopwords to remove
+        stopwords = {'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'est', 'à', 
+                    'en', 'que', 'qui', 'pour', 'dans', 'par', 'sur', 'au', 'aux', 'avec', 
+                    'ce', 'ces', 'cette', 'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 
+                    'elles', 'mon', 'ton', 'son', 'notre', 'votre', 'leur', 'comment', 
+                    'où', 'quand', 'pourquoi', 'quoi', 'quel', 'quelle', 'the', 'a', 'is', 
+                    'and', 'to', 'of', 'in', 'it', 'you', 'that', 'was', 'for', 'on', 'are', 
+                    'with', 'as', 'have', 'be', 'at', 'this', 'but', 'by', 'from', 'what', 
+                    'how', 'when', 'where', 'who', 'why', 'which'}
+        
+        # Split query into words, convert to lowercase, and remove stopwords
+        words = query.lower().split()
+        keywords = [word for word in words if word not in stopwords and len(word) > 2]
+        
+        # Return unique keywords
+        return list(set(keywords))
+
+    def _calculate_topic_relevance(self, content: str, topic_keywords: List[str]) -> float:
+        """Calculate relevance score of content to topic keywords."""
+        if not topic_keywords:
+            return 0.0
+            
+        content_lower = content.lower()
+        matches = sum(keyword in content_lower for keyword in topic_keywords)
+        
+        # Calculate score as percentage of matched keywords, with higher weight for multiple matches
+        base_score = matches / len(topic_keywords)
+        density_factor = min(1.0, matches / 5)  # Cap at 1.0 for 5+ matches
+        
+        # Combine base score with density factor
+        return (base_score * 0.6) + (density_factor * 0.4)
 
     def delete_document(self, chroma_id: str) -> None:
         """Delete all chunks of a document from the vector store."""

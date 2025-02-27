@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 class DocumentService:
     def __init__(self):
         self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=2048,  # Increase from 1024
-            chunk_overlap=200,  # Increase from 80
+            chunk_size=2048,  
+            chunk_overlap=200,
             length_function=len,
             is_separator_regex=False
         )
@@ -88,17 +88,33 @@ class DocumentService:
             gc.collect()
 
     def store_document(self, content: str, metadata: dict) -> List[Document]:
-        """Split content and prepare documents for vector store."""
+        """Split content with emphasis on document headers."""
         try:
-            # Découper le contenu en chunks
-            texts = self.text_splitter.split_text(content)
-            logger.info(f"Split document into {len(texts)} chunks")
+            # Special handling for first chunk
+            lines = content.split('\n')
+            header_chunk = '\n'.join(lines[:10])  # First 10 lines as header
+            remaining_content = '\n'.join(lines[10:])
             
-            # Créer les documents Langchain
-            documents = []
-            for i, text in enumerate(texts):
+            # Create header document
+            documents = [
+                Document(
+                    page_content=header_chunk,
+                    metadata={
+                        **metadata,
+                        'chunk_id': 0,
+                        'is_header': True
+                    }
+                )
+            ]
+            
+            # Split remaining content
+            texts = self.text_splitter.split_text(remaining_content)
+            
+            # Create remaining documents
+            for i, text in enumerate(texts, start=1):
                 doc_metadata = metadata.copy()
                 doc_metadata['chunk_id'] = i
+                doc_metadata['is_header'] = False
                 documents.append(
                     Document(
                         page_content=text,
@@ -106,13 +122,9 @@ class DocumentService:
                     )
                 )
             
-            logger.info(f"Created {len(documents)} Langchain documents")
-            # Log le premier document pour vérification
-            if documents:
-                logger.info(f"Sample document content: {documents[0].page_content[:100]}...")
-            
+            logger.info(f"Created {len(documents)} documents (1 header + {len(documents)-1} chunks)")
             return documents
-            
+                
         except Exception as e:
             logger.error(f"Error preparing documents: {str(e)}")
             raise

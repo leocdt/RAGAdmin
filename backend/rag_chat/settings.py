@@ -123,12 +123,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ChromaDB settings
 CHROMA_DB_DIR = os.path.join(BASE_DIR, "chroma_db")
-# Ensure the ChromaDB directory exists
 os.makedirs(CHROMA_DB_DIR, exist_ok=True)
 
-OLLAMA_MODEL = "llama3.1:8b"
-OLLAMA_HOST = "http://192.168.99.102:11434"
+# Update OLLAMA settings with correct host
+OLLAMA_MODEL = "llama3.1:8b"  # Change to available model
+OLLAMA_HOST = "http://localhost:11434"  # Change to localhost
+
+# Update ChromaDB settings
 CHROMA_SETTINGS = {
+    "chroma_server_host": "localhost", 
+    "chroma_server_port": "8080",
     "persist_directory": CHROMA_DB_DIR,
-    "anonymized_telemetry": False
+    "anonymized_telemetry": False,
+    "allow_reset": True,
+    "is_persistent": True,
+    "is_distributed": False
 }

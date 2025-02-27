@@ -43,18 +43,19 @@ class ChatView(APIView):
             )
 
         try:
-            # Passer le modèle au service
+            # Get the response from the chat service
             response = chat_service.generate_response(
                 message, 
                 chat_id, 
                 history,
-                model,  # Ajout du modèle ici
-                use_context  # Pass useContext to generate_response
+                model,
+                use_context
             )
             
+            # Stream only the text response
             def stream_response():
-                for chunk in response:
-                    yield chunk
+                # Return just the response string, nothing else
+                yield response
 
             return StreamingHttpResponse(
                 streaming_content=stream_response(),
